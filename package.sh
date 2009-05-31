@@ -7,7 +7,7 @@ then
 fi
 
 cp -Rupv src/ihx ihx
-cp doc/README ihx
+cp README ihx
 cp doc/LICENSE ihx
 cp doc/haxelib.xml ihx
 cp bin/ihx.n ihx/run.n

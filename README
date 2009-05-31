@@ -1,10 +1,10 @@
-IHx
+ihx
 The interactive haXe shell
 
 
 OVERVIEW
 
-IHx is an interactive shell for using hscript, a haXe-like scripting
+ihx is an interactive shell for using hscript, a haXe-like scripting
 language.  While hscript is very similar to haXe, there are some
 important differences:
 
@@ -31,7 +31,7 @@ the haxelib distribution.
 
 USAGE
 
-The IHx shell accepts the following commands:
+The ihx shell accepts the following commands:
 
 - dir      list all currently defined variables
 - builtins list all builtin classes
@@ -40,13 +40,13 @@ The IHx shell accepts the following commands:
 - exit     close this session
 - quit     close this session
 
-Other than the above commands, all input given to IHx will be passed
+Other than the above commands, all input given to ihx will be passed
 to the hscript interpreter.  If output is not suppressed with a
 trailing semicolon, the return value will be printed to stdout.
 
-The standard prompt of '>> ' is displayed when IHx is waiting for
+The standard prompt of '>> ' is displayed when ihx is waiting for
 input.  The '.. ' prompt indicates that the last line of input was an
-incomplete haXe statement, and IHx is waiting for the rest.
+incomplete haXe statement, and ihx is waiting for the rest.
 
 
 EXAMPLE
