@@ -1,0 +1,84 @@
+IHx
+The interactive haXe shell
+
+
+OVERVIEW
+
+IHx is an interactive shell for using hscript, a haXe-like scripting
+language.  While hscript is very similar to haXe, there are some
+important differences:
+
+- optional arguments are not allowed (pass null instead)
+- variables do not have types
+- there are no type parameters (duh)
+- if 'var' is skipped on variable definition, the variable is defined
+  in the global scope, and is available to other commands in the
+  session
+- skipping the semicolon at the end of a statement prints the return
+  value to the screen
+- only a subset of the crossplatform libraries are available
+
+
+INSTALLATION
+
+ihx can be run through haxelib with the command:
+    haxelib run ihx
+
+Alternatively, an executable can be obtained either through the
+project repository or by making it from the "run.n" file included in
+the haxelib distribution.
+
+
+USAGE
+
+The IHx shell accepts the following commands:
+
+- dir      list all currently defined variables
+- builtins list all builtin classes
+- clear    delete all variables from the current session
+- help     print this message
+- exit     close this session
+- quit     close this session
+
+Other than the above commands, all input given to IHx will be passed
+to the hscript interpreter.  If output is not suppressed with a
+trailing semicolon, the return value will be printed to stdout.
+
+The standard prompt of '>> ' is displayed when IHx is waiting for
+input.  The '.. ' prompt indicates that the last line of input was an
+incomplete haXe statement, and IHx is waiting for the rest.
+
+
+EXAMPLE
+
+The following is an example of an ihx session:
+
+  haXe interactive shell v0.0.1
+  type "help" for help
+  >> a=1
+  1
+  >> b=2;
+  >> c=a+b
+  3
+  >> Math.sin(c)
+  0.1411200081
+  >> str='this is a string'
+  this is a string
+  >> str2='multiline
+  .. string'
+  multiline
+  string
+  >> dir
+  Current variables: a, b, c, str, str2
+  >> arr=[1,4,2,5,1]
+  [1, 4, 2, 5, 1]
+  >> arr.sort(Reflect.compare)
+  >> arr
+  [1, 1, 2, 4, 5]
+  >> timestwo = function(ii) { ii*2; }
+  #function:-1
+  >> Lambda.map(arr, timestwo)
+  {2, 2, 4, 8, 10}
+  >> quit
+
+

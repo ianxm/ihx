@@ -1,0 +1,12 @@
+doesn't work:
+- regex syntax
+- write readme
+
+- fix haxe.xml.Fast
+- fix haxe.FastList
+- fix haxe.io.StringInput
+
+- clear <variable>
+- clear all
+- help <command>
+- a way to cancel a multiline command
