@@ -1,6 +1,4 @@
 doesn't work:
-- regex syntax
-- write readme
 
 - fix haxe.xml.Fast
 - fix haxe.FastList
