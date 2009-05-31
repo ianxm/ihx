@@ -157,6 +157,9 @@ class CmdProcessor
     return cmdStr;
   }
 
+  /**
+	return a list of all user defined variables
+   **/
   private function listVars() : String
   {
     var builtins = builtins;
@@ -175,6 +178,9 @@ class CmdProcessor
       return "There are currently no variables";
   }
 
+  /**
+	return a list of all builtin classes
+   **/
   private function listBuiltins() : String
   {
     var rootClasses = rootClasses;
@@ -193,6 +199,9 @@ class CmdProcessor
       return "There are no builtins.  Something must have gone wrong.";
   }
 
+  /**
+	clear all user defined variables
+   **/
   private function clearVars() : String
   {
     var builtins = builtins;
