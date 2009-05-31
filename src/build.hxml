@@ -1,0 +1,11 @@
+-main ihx.TestSuite
+-neko ../bin/tests.n
+-lib hscript
+-cmd neko ../bin/tests.n
+
+--next
+
+-main ihx.IHx
+-neko ../bin/ihx.n
+-lib hscript
+-cmd nekotools boot ../bin/ihx.n
