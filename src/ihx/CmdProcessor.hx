@@ -129,6 +129,11 @@ class CmdProcessor
 
       throw InvalidCommand(Type.enumConstructor(ex) + ": " + Type.enumParameters(ex)[0]);
     }
+    catch (ex2:String)
+    {
+      sb = new StringBuf();
+      throw InvalidStatement;
+    }
 
     sb = new StringBuf();
     return (ret==null) ? null : Std.string(ret);

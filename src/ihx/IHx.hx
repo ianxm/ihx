@@ -28,7 +28,7 @@ import ihx.CmdProcessor;
  **/
 class IHx
 {
-  private static var VERSION = "0.0.1";
+  private static var VERSION = "0.0.2";
 
   /** the source for commands **/
   private var stdin : FileInput;
