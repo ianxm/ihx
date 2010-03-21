@@ -18,17 +18,38 @@
 
 package ihx;
 
-class TestSuite
+/**
+	remember the past commands.
+ **/
+class History
 {
-  static function main()
+  private var commands : Array<String>;
+  private var pos : Int;
+
+  public function new()
   {
-    var r = new haxe.unit.TestRunner();
-    r.add(new ihx.TestPartialCommand());
-    r.add(new ihx.TestHistory());
-    r.add(new ihx.TestSimpleStatements());
-    r.add(new ihx.TestCommands());
-    r.add(new ihx.TestErrorStates());
-    r.add(new ihx.TestBuiltins());
-    r.run();
+    commands = [""];
+    pos = 0;
+  }
+
+  public function add(cmd)
+  {
+    commands.push(cmd);
+    pos = commands.length;
+  }
+
+  public function next()
+  {
+    if( pos == commands.length )
+      return "";
+    pos += 1;
+    return commands[pos];
+  }
+
+  public function prev()
+  {
+    if( pos > 0 )
+      pos -= 1;
+    return commands[pos];
   }
 }
