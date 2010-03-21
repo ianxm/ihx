@@ -66,7 +66,7 @@ class ConsoleReader
 	{
 	case 3: { neko.Lib.println(""); neko.Sys.exit(1); } // ctrl-c
 	case 13: { neko.Lib.println(""); history.add(cmd.toString()); return cmd.toString(); } // enter
-	case 126: cmd.del();
+	  //case 126: cmd.del(); // del shares code with tilde?
 	case 127: cmd.backspace();
 	default: cmd.addChar(String.fromCharCode(code));
 	}
