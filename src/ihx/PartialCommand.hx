@@ -29,10 +29,14 @@ class PartialCommand
   /** cursor position **/
   private var pos : Int;
 
+  /** prompt to show **/
+  public var prompt(null,default) : String;
+
   public function new()
   {
-    str = '';
+    str = "";
     pos = 0;
+    prompt = "";
   }
 
   /**
@@ -125,6 +129,14 @@ class PartialCommand
    **/
   public function toConsole()
   {
-    return "\r" + str + " " + "\r" + str.substr(0, pos);
+    return "\r" + prompt + str + " " + "\r" + prompt + str.substr(0, pos);
+  }
+
+  /**
+	get string to clear this command from the console
+   **/
+  public function clearString()
+  {
+    return "\r" + StringTools.rpad("", " ", str.length + prompt.length);
   }
 }

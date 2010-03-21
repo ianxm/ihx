@@ -23,14 +23,14 @@ package ihx;
  **/
 class ConsoleReader
 {
+  public var cmd(default,null) : PartialCommand;
   private var code : Int;
-  private var cmd : PartialCommand;
   private var history : History;
 
   public static function main()
   {
     var cr = new ConsoleReader();
-    var cmdStr = cr.readConsole();
+    var cmdStr = cr.readLine();
     neko.Lib.println("\n" + cmdStr);
   }
 
@@ -42,8 +42,9 @@ class ConsoleReader
   }
 
   // get a command from the console
-  public function readConsole()
+  public function readLine()
   {
+    cmd.set("");
     while( true )
     {
       code = neko.io.File.getChar(false);
@@ -63,8 +64,8 @@ class ConsoleReader
       {
 	switch( code )
 	{
-	case 3: neko.Sys.exit(1); // ctrl-c
-	case 13: return cmd.toString(); // enter
+	case 3: { neko.Lib.println(""); neko.Sys.exit(1); } // ctrl-c
+	case 13: { neko.Lib.println(""); history.add(cmd.toString()); return cmd.toString(); } // enter
 	case 126: cmd.del();
 	case 127: cmd.backspace();
 	default: cmd.addChar(String.fromCharCode(code));
@@ -77,7 +78,6 @@ class ConsoleReader
 
   public function clear(len)
   {
-    var len = cmd.toString().length;
-    neko.Lib.print("\r" + StringTools.rpad("", " ", len));
+    neko.Lib.print(cmd.clearString());
   }
 }

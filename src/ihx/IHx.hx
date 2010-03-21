@@ -31,7 +31,7 @@ class IHx
   private static var VERSION = "0.0.2";
 
   /** the source for commands **/
-  private var stdin : FileInput;
+  private var console : ConsoleReader;
 
   /**
 	start the interpreter
@@ -47,11 +47,11 @@ class IHx
    **/
   public function new()
   {
-    stdin = neko.io.File.stdin();
+    console = new ConsoleReader();
   }
   
   /**
-	get commands from stdin, process them, display output
+	get commands from the console, process them, display output
 	handle ihx commands, get haxe statement (can be multiline), parse it, pass to execution method
    **/
   public function run()
@@ -64,13 +64,14 @@ class IHx
     while( true )
     {
       // initial prompt
+      console.cmd.prompt = ">> ";
       Lib.print(">> ");
 
       while (true)
       {
 	try
 	{
-	  var ret = processor.process(stdin.readLine());
+	  var ret = processor.process(console.readLine());
 	  if( ret != null )
 	    Lib.println(ret);
 	}
@@ -78,7 +79,8 @@ class IHx
 	{
 	  if(Type.enumConstructor(ex) == "IncompleteStatement")
 	  {
-	    Lib.print(".. "); // continue prompt
+	    console.cmd.prompt = ".. "; // continue prompt
+	    Lib.print(".. ");
 	    continue;
 	  }
 	  else if (Type.enumConstructor(ex) == "InvalidStatement")
@@ -90,6 +92,7 @@ class IHx
 	}
 
 	// restart after an error or completed command
+	console.cmd.prompt = ">> ";
 	Lib.print(">> ");
       }
     }
