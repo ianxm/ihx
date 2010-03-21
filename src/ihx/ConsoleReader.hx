@@ -53,8 +53,8 @@ class ConsoleReader
 	code = neko.io.File.getChar(false);
 	switch( code )
 	{
-	case 65: cmd.set(history.prev());
-	case 66: cmd.set(history.next());
+	case 65: { clear(cmd); cmd.set(history.prev()); }
+	case 66: { clear(cmd); cmd.set(history.next()); }
 	case 67: cmd.cursorForward();
 	case 68: cmd.cursorBack();
 	}
@@ -73,5 +73,11 @@ class ConsoleReader
       neko.Lib.print(cmd.toConsole());
     }
     return "";
+  }
+
+  public function clear(len)
+  {
+    var len = cmd.toString().length;
+    neko.Lib.print("\r" + StringTools.rpad("", " ", len));
   }
 }
