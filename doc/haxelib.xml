@@ -1,6 +1,6 @@
 <project name="ihx" url="http://github.com/ianxm/ihx" license="GPL">
     <user name="ianxm"/>
     <description>ihx is an interactive haXe scripting shell</description>
-    <version name="0.0.1">initial release</version>
+    <version name="0.0.3">can use arrow keys to step through history</version>
     <depends name="hscript"/>
 </project>
