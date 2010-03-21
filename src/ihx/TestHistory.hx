@@ -30,12 +30,50 @@ class TestHistory extends haxe.unit.TestCase
     assertEquals("three", history.prev());
     assertEquals("two", history.prev());
     assertEquals("one", history.prev());
+    assertEquals("", history.prev());
 
     history.add("four");
     assertEquals("four", history.prev());
     assertEquals("three", history.prev());
     assertEquals("two", history.prev());
     assertEquals("one", history.prev());
+    assertEquals("", history.prev());
+  }
+
+  public function testAddPrevWrap()
+  {
+    var history = new History();
+    history.add("one");
+    history.add("two");
+    history.add("three");
+
+    assertEquals("three", history.prev());
+    assertEquals("two", history.prev());
+    assertEquals("one", history.prev());
+    assertEquals("", history.prev());
+
+    assertEquals("three", history.prev());
+    assertEquals("two", history.prev());
+    assertEquals("one", history.prev());
+    assertEquals("", history.prev());
+  }
+
+  public function testAddNextWrap()
+  {
+    var history = new History();
+    history.add("one");
+    history.add("two");
+    history.add("three");
+
+    assertEquals("one", history.next());
+    assertEquals("two", history.next());
+    assertEquals("three", history.next());
+    assertEquals("", history.next());
+
+    assertEquals("one", history.next());
+    assertEquals("two", history.next());
+    assertEquals("three", history.next());
+    assertEquals("", history.next());
   }
 
   public function testAddPrevNext()

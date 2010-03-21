@@ -29,7 +29,7 @@ class History
   public function new()
   {
     commands = [""];
-    pos = 0;
+    pos = 1;
   }
 
   public function add(cmd)
@@ -40,16 +40,15 @@ class History
 
   public function next()
   {
-    if( pos == commands.length )
-      return "";
     pos += 1;
-    return commands[pos];
+    return commands[pos % commands.length];
   }
 
   public function prev()
   {
-    if( pos > 0 )
-      pos -= 1;
-    return commands[pos];
+    pos -= 1;
+    if( pos < 0 )
+      pos += commands.length;
+    return commands[pos % commands.length];
   }
 }
