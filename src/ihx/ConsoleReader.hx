@@ -18,6 +18,17 @@
 
 package ihx;
 
+typedef CodeSet = {
+  var arrow :Int;
+  var up :Int;
+  var down :Int;
+  var right :Int;
+  var left :Int;
+  var backspace :Int;
+  var ctrlc :Int;
+  var enter :Int;
+}
+
 /**
 	read a command from the console.  handle arrow keys.
  **/
@@ -26,6 +37,7 @@ class ConsoleReader
   public var cmd(default,null) : PartialCommand;
   private var code : Int;
   private var history : History;
+  private var codeSet : CodeSet;
 
   public static function main()
   {
@@ -39,6 +51,12 @@ class ConsoleReader
     code = 0;
     cmd = new PartialCommand();
     history = new History();
+    if( neko.Sys.systemName() == "Windows" )
+      codeSet = {arrow: 224, up: 72, down: 80, right: 77, left: 75, 
+		 backspace: 8, ctrlc: 3, enter: 13};
+    else
+      codeSet = {arrow: 27, up: 65, down: 66, right: 67, left: 68,
+		 backspace: 127, ctrlc: 3, enter: 13};
   }
 
   // get a command from the console
@@ -48,26 +66,27 @@ class ConsoleReader
     while( true )
     {
       code = neko.io.File.getChar(false);
-      if( code == 27 ) // arrow keys
+      if( code == codeSet.arrow ) // arrow keys
       {
-	neko.io.File.getChar(false);
+	if( neko.Sys.systemName() != "Windows" )
+	  neko.io.File.getChar(false); // burn extra char
 	code = neko.io.File.getChar(false);
 	switch( code )
 	{
-	case 65: { clear(cmd); cmd.set(history.prev()); }
-	case 66: { clear(cmd); cmd.set(history.next()); }
-	case 67: cmd.cursorForward();
-	case 68: cmd.cursorBack();
+	case codeSet.up:    { clear(cmd); cmd.set(history.prev()); }
+	case codeSet.down:  { clear(cmd); cmd.set(history.next()); }
+	case codeSet.right: cmd.cursorForward();
+	case codeSet.left:  cmd.cursorBack();
 	}
       }
       else
       {
 	switch( code )
 	{
-	case 3: { neko.Lib.println(""); neko.Sys.exit(1); } // ctrl-c
-	case 13: { neko.Lib.println(""); history.add(cmd.toString()); return cmd.toString(); } // enter
-	  //case 126: cmd.del(); // del shares code with tilde?
-	case 127: cmd.backspace();
+	case codeSet.ctrlc: { neko.Lib.println(""); neko.Sys.exit(1); }
+	case codeSet.enter: { neko.Lib.println(""); history.add(cmd.toString()); return cmd.toString(); }
+	//case 126: cmd.del(); // del shares code with tilde?
+	case codeSet.backspace: cmd.backspace();
 	default: cmd.addChar(String.fromCharCode(code));
 	}
       }
