@@ -23,8 +23,8 @@ package ihx;
  **/
 class History
 {
-  private var commands : Array<String>;
-  private var pos : Int;
+  private var commands :Array<String>;
+  private var pos :Int;
 
   public function new()
   {

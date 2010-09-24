@@ -34,10 +34,10 @@ typedef CodeSet = {
  **/
 class ConsoleReader
 {
-  public var cmd(default,null) : PartialCommand;
-  private var code : Int;
-  private var history : History;
-  private var codeSet : CodeSet;
+  public var cmd(default,null) :PartialCommand;
+  private var code :Int;
+  private var history :History;
+  private var codeSet :CodeSet;
 
   public static function main()
   {

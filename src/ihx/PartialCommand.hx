@@ -24,13 +24,13 @@ package ihx;
 class PartialCommand
 {
   /** current command string **/
-  private var str : String;
+  private var str :String;
 
   /** cursor position **/
-  private var pos : Int;
+  private var pos :Int;
 
   /** prompt to show **/
-  public var prompt(null,default) : String;
+  public var prompt(null,default) :String;
 
   public function new()
   {

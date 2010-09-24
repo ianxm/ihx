@@ -25,28 +25,28 @@ enum CmdError
 {
   IncompleteStatement;
   InvalidStatement;
-  InvalidCommand(s:String);
+  InvalidCommand(s :String);
 }
 
 class CmdProcessor
 {
   /** accumulating command fragments **/
-  private var sb:StringBuf;
+  private var sb :StringBuf;
   
   /** hash connecting interpreter commands to the functions that implement them **/
-  private var commands : Hash<Dynamic>;
+  private var commands :Hash<Dynamic>;
 
   /** parses commands **/
-  private var parser : hscript.Parser;
+  private var parser :hscript.Parser;
 
   /** interprets commands  **/
-  private var interp : hscript.Interp;
+  private var interp :hscript.Interp;
 
   /** list of crossplatform classes **/
-  private var rootClasses : List<String>;
+  private var rootClasses :List<String>;
 
   /** list of non-class builtin variables **/
-  private var builtins : List<String>;
+  private var builtins :List<String>;
 
   public function new()
   {
@@ -97,7 +97,7 @@ class CmdProcessor
   /**
 	process a line of user input
    **/
-  public function process(cmd) : String
+  public function process(cmd) :String
   {
     sb.add(cmd);
     var ret;
@@ -114,7 +114,7 @@ class CmdProcessor
 	ret = executeCmd(parser.parseString(cmdStr), StringTools.endsWith(cmdStr, ";"));
       }
     }
-    catch (ex:Error)
+    catch (ex :Error)
     {
       if( Type.enumConstructor(ex) == "EUnexpected" && Type.enumParameters(ex)[0] == "<eof>" 
 	  || Type.enumConstructor(ex) == "EUnterminatedString" || Type.enumConstructor(ex) == "EUnterminatedComment")
@@ -129,7 +129,7 @@ class CmdProcessor
 
       throw InvalidCommand(Type.enumConstructor(ex) + ": " + Type.enumParameters(ex)[0]);
     }
-    catch (ex2:String)
+    catch (ex2 :String)
     {
       sb = new StringBuf();
       throw InvalidStatement;
@@ -143,7 +143,7 @@ class CmdProcessor
   /**
 	a command was parsed successfully, pass it into the interpreter, display the output
    **/
-  private function executeCmd(program, suppressOutput) : String
+  private function executeCmd(program, suppressOutput) :String
   {
     var ret = interp.execute(program);
     return ( ret!=null && !suppressOutput ) ? ret : null;
@@ -165,7 +165,7 @@ class CmdProcessor
   /**
 	return a list of all user defined variables
    **/
-  private function listVars() : String
+  private function listVars() :String
   {
     var builtins = builtins;
     var rootClasses = rootClasses;
@@ -186,7 +186,7 @@ class CmdProcessor
   /**
 	return a list of all builtin classes
    **/
-  private function listBuiltins() : String
+  private function listBuiltins() :String
   {
     var rootClasses = rootClasses;
     var isBuiltin = function(kk) { return Lambda.has(rootClasses, kk); }
@@ -207,7 +207,7 @@ class CmdProcessor
   /**
 	clear all user defined variables
    **/
-  private function clearVars() : String
+  private function clearVars() :String
   {
     var builtins = builtins;
     var rootClasses = rootClasses;
@@ -219,7 +219,7 @@ class CmdProcessor
     return null;
   }
 
-  private function findVars(check:String->Bool)
+  private function findVars(check :String->Bool)
   {
     var keys = new List<String>();
     for( kk in interp.variables.keys() )
@@ -230,12 +230,12 @@ class CmdProcessor
     return keys.filter(check);
   }
 
-  private function wordWrap(str:String) : String
+  private function wordWrap(str :String) :String
   {
     if( str.length<=80 )
       return str;
     
-    var words : Array<String> = str.split(" ");
+    var words :Array<String> = str.split(" ");
     var sb = new StringBuf();
     var ii = 0; // index of current word
     var oo = 1; // index of current output line
@@ -258,7 +258,7 @@ class CmdProcessor
     return sb.toString();
   }
 
-  private function printHelp() : String
+  private function printHelp() :String
   {
     return "IHx Shell Commands:\n"
       + "  dir      list all currently defined variables\n"
