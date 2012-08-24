@@ -1,6 +1,6 @@
 <project name="ihx" url="http://github.com/ianxm/ihx" license="GPL">
     <user name="ianxm"/>
     <description>ihx is an interactive haXe scripting shell</description>
-    <version name="0.1.0">fixed console input for windows</version>
-    <depends name="hscript" version="1.5.2"/>
+    <version name="0.1.1">fixes for haxe 2.10</version>
+    <depends name="hscript" version="1.7"/>
 </project>
