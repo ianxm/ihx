@@ -26,13 +26,13 @@ class TestBuiltins extends haxe.unit.TestCase
     {
         var proc = new CmdProcessor();
         var ret = proc.process("a=[1,3,2]");
-        assertEquals("[1, 3, 2]", ret);
+        assertEquals("[1,3,2]", ret);
         ret = proc.process("a.length");
         assertEquals("3", ret);
         ret = proc.process("a[2]");
         assertEquals("2", ret);
         ret = proc.process("a.sort(Reflect.compare);a");
-        assertEquals("[1, 2, 3]", ret);
+        assertEquals("[1,2,3]", ret);
     }
 
     public function testDate()
@@ -122,7 +122,7 @@ class TestBuiltins extends haxe.unit.TestCase
     {
         var proc = new CmdProcessor();
         var ret = proc.process("a=[1,3,5,6,3]");
-        assertEquals("[1, 3, 5, 6, 3]", ret);
+        assertEquals("[1,3,5,6,3]", ret);
         ret = proc.process("f=function(ii) { return ii*3; }");
         assertEquals("#function:-1", ret);
         ret = proc.process("b=Lambda.map(a,f);b");
@@ -150,7 +150,7 @@ class TestBuiltins extends haxe.unit.TestCase
     {
         var proc = new CmdProcessor();
         var ret = proc.process("Math.sin(1)");
-        assertEquals("0.8414709848", ret);
+        assertEquals("0.841470984807897", ret);
         ret = proc.process("Math.abs(-2.4)");
         assertEquals("2.4", ret);
         ret = proc.process("Math.floor(4.3)");
@@ -165,7 +165,7 @@ class TestBuiltins extends haxe.unit.TestCase
         var ret = proc.process("a='a string'");
         assertEquals("a string", ret);
         ret = proc.process("Reflect.fields(a)");
-        assertEquals("[__s, length]", ret);
+        assertEquals("[__s,length]", ret);
         ret = proc.process("Reflect.isObject(a)");
         assertEquals("true", ret);
     }
@@ -189,7 +189,7 @@ class TestBuiltins extends haxe.unit.TestCase
         ret = proc.process("a.charAt(2)");
         assertEquals("s", ret);
         ret = proc.process("a.split(' ')");
-        assertEquals("[a, string]", ret);
+        assertEquals("[a,string]", ret);
         ret = proc.process("a.toUpperCase()");
         assertEquals("A STRING", ret);
     }

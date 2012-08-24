@@ -65,12 +65,12 @@ class ConsoleReader
         cmd.set("");
         while( true )
         {
-            code = neko.io.File.getChar(false);
+            code = Sys.getChar(false);
             if( code == codeSet.arrow ) // arrow keys
             {
                 if( neko.Sys.systemName() != "Windows" )
-                    neko.io.File.getChar(false); // burn extra char
-                code = neko.io.File.getChar(false);
+                    Sys.getChar(false); // burn extra char
+                code = Sys.getChar(false);
                 switch( code )
                 {
                 case codeSet.up:    { clear(cmd); cmd.set(history.prev()); }
