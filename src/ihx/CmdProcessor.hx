@@ -18,148 +18,73 @@
 
 package ihx;
 
+using StringTools;
 import neko.Lib;
-import hscript.Expr;
+import ihx.program.Program;
 
 enum CmdError
 {
     IncompleteStatement;
-    InvalidStatement;
-    InvalidCommand(s :String);
+    InvalidStatement(msg :String);
 }
 
 class CmdProcessor
 {
-    /** accumulating command fragments **/
+    /** accumulating command fragments */
     private var sb :StringBuf;
   
-    /** hash connecting interpreter commands to the functions that implement them **/
+    /** hash connecting interpreter commands to the functions that implement them */
     private var commands :Hash<Dynamic>;
 
-    /** parses commands **/
-    private var parser :hscript.Parser;
-
-    /** interprets commands  **/
-    private var interp :hscript.Interp;
-
-    /** list of crossplatform classes **/
-    private var rootClasses :List<String>;
-
-    /** list of non-class builtin variables **/
-    private var builtins :List<String>;
+    /** controls temp program text */
+    private var program :Program;
 
     public function new()
     {
+        program = new Program();
         sb = new StringBuf();
-
         commands = new Hash<Void->String>();
         commands.set("exit", callback(neko.Sys.exit,0));
         commands.set("quit", callback(neko.Sys.exit,0));
         commands.set("dir", listVars);
-        commands.set("builtins", listBuiltins);
+        commands.set("print", printProgram);
         commands.set("clear", clearVars);
         commands.set("help", printHelp);
-
-        parser = new hscript.Parser();
-        interp = new hscript.Interp();
-
-        builtins = Lambda.list(['null', 'true', 'false', 'trace']); 
-        rootClasses = Lambda.list(['Array', /*'ArrayAccess',*/ 'Class', 'Date', 'DateTools', 'Dynamic', 'EReg', /*'Enum',*/ 'Float', 'Hash', 'Int', 'IntHash',
-                                   'IntIter', /*'Iterable', 'Iterator',*/ 'Lambda', 'List', 'Math', /*'Null',*/ 'Reflect', 'Std', 'String', 'StringBuf', 'StringTools',
-                                   'Type', /*'Void',*/ 'Xml', 'haxe_BaseCode', 'haxe_FastCell', 'haxe_FastList', 'haxe_Firebug', 
-                                   'haxe_Http', 'haxe_Int32', 'haxe_Log', 'haxe_Md5', /*'haxe_PosInfos',*/ 'haxe_Public', 'haxe_Resource', 'haxe_Serializer', 
-                                   'haxe_Stack', /*'haxe_StackItem',*/ 'haxe_Template', 'haxe_Timer', /*'haxe_TimerQueue', 'haxe_TypeResolver',*/ 'haxe_Unserializer']);
-
-        // make all root classes available to the interpreter
-        for( cc in rootClasses )
-            interp.variables.set(cc,Type.resolveClass(StringTools.replace(cc,"_",".")));
-
-        for( cc in rootClasses )
-            if( interp.variables.get(cc) == null )
-                trace("fail: " + cc);
-
-        var _:DateTools;
-        var _:Xml;
-        var _:haxe.BaseCode;
-        var _:haxe.Firebug;
-        var _:haxe.Http;
-        var _:haxe.Md5;
-        var _:haxe.PosInfos;
-        var _:haxe.Public;
-        var _:haxe.Resource;
-        var _:haxe.Serializer;
-        var _:haxe.Stack;
-        var _:haxe.Template;
-        var _:haxe.Timer;
-        var _:haxe.Unserializer;
     }
 
     /**
        process a line of user input
     **/
-    public function process(cmd) :String
+    public function process(cmd :String) :String
     {
+        if( cmd.endsWith("\\") )
+        {
+            sb.add(cmd.substr(0, cmd.length-1));
+            throw IncompleteStatement;
+        }
+
         sb.add(cmd);
         var ret;
         try
         {
-            // handle ihx commands
-            if( commands.exists(sb.toString()) )
+            if( commands.exists(sb.toString()) )            // handle ihx commands
                 ret = commands.get(sb.toString())();
-
-            // execute a haxe statement
-            else
+            else                                            // execute a haxe statement
             {
-                var cmdStr = preprocess(sb.toString());
-                ret = executeCmd(parser.parseString(cmdStr), StringTools.endsWith(cmdStr, ";"));
+                program.addStatement(sb.toString());
+                ret = NekoEval.evaluate(program.getProgram());
+                program.acceptLastCmd(true);
             }
         }
-        catch (ex :Error)
+        catch (ex :String)
         {
-            if( Type.enumConstructor(ex) == "EUnexpected" && Type.enumParameters(ex)[0] == "<eof>" 
-                || Type.enumConstructor(ex) == "EUnterminatedString" || Type.enumConstructor(ex) == "EUnterminatedComment")
-            {
-                sb.add("\n");
-                throw IncompleteStatement;
-            }
-
+            program.acceptLastCmd(false);
             sb = new StringBuf();
-            if( Type.enumConstructor(ex) == "EInvalidChar" || Type.enumConstructor(ex) == "EUnexpected")
-                throw InvalidStatement;
-
-            throw InvalidCommand(Type.enumConstructor(ex) + ": " + Type.enumParameters(ex)[0]);
-        }
-        catch (ex2 :String)
-        {
-            sb = new StringBuf();
-            throw InvalidStatement;
+            throw InvalidStatement(ex);
         }
 
         sb = new StringBuf();
         return (ret==null) ? null : Std.string(ret);
-    }
-
-
-    /**
-       a command was parsed successfully, pass it into the interpreter, display the output
-    **/
-    private function executeCmd(program, suppressOutput) :String
-    {
-        var ret = interp.execute(program);
-        return ( ret!=null && !suppressOutput ) ? ret : null;
-    }
-
-    /**
-       fix the dot syntax for standard class packages and regex pattern defs
-    **/
-    private function preprocess(cmdStr)
-    {
-        cmdStr = StringTools.replace(cmdStr, "haxe.", "haxe_");
-
-        var reRe = new EReg("~/([^/]+)/([igms]*)", "g");
-        cmdStr = reRe.replace(cmdStr, "new EReg(\"$1\",\"$2\")");
-
-        return cmdStr;
     }
 
     /**
@@ -167,67 +92,27 @@ class CmdProcessor
     **/
     private function listVars() :String
     {
-        var builtins = builtins;
-        var rootClasses = rootClasses;
-        var notBuiltin = function(kk) { return !Lambda.has(builtins, kk) && !Lambda.has(rootClasses, kk); }
-        var keys = findVars(notBuiltin);
-        var keyArray = Lambda.array(keys);
-        keyArray.sort(Reflect.compare);
-
-        if( keyArray.length>0 )
-        {
-            var blob = wordWrap("Current variables: " + keyArray.join(", "));
-            return blob;
-        }
-        else
+        var vars = program.getVars();
+        if( vars.isEmpty() )
             return "There are currently no variables";
+        return wordWrap(vars.join(", "));
     }
 
     /**
-       return a list of all builtin classes
-    **/
-    private function listBuiltins() :String
-    {
-        var rootClasses = rootClasses;
-        var isBuiltin = function(kk) { return Lambda.has(rootClasses, kk); }
-        var keys = findVars(isBuiltin);
-        keys = Lambda.map(keys, function(ii) { return StringTools.replace(ii,'_','.'); });
-        var keyArray = Lambda.array(keys);
-        keyArray.sort(Reflect.compare);
-    
-        if( keyArray.length>0 )
-        {
-            var blob = wordWrap("Builtins: " + keyArray.join(", "));
-            return blob;
-        }
-        else
-            return "There are no builtins.  Something must have gone wrong.";
-    }
-
-    /**
-       clear all user defined variables
+       reset workspace
     **/
     private function clearVars() :String
     {
-        var builtins = builtins;
-        var rootClasses = rootClasses;
-        var notBuiltin = function(kk) { return !Lambda.has(builtins, kk) && !Lambda.has(rootClasses, kk); }
-        var keys = findVars(notBuiltin);
-
-        for( kk in keys )
-            interp.variables.remove(kk);
-        return null;
+        program = new Program();
+        return "Cleared";
     }
 
-    private function findVars(check :String->Bool)
+    /**
+       print temp program
+    **/
+    private function printProgram() :String
     {
-        var keys = new List<String>();
-        for( kk in interp.variables.keys() )
-            keys.add(kk);
-
-        var builtins = builtins;
-        var rootClasses = rootClasses;
-        return keys.filter(check);
+        return program.getProgram();
     }
 
     private function wordWrap(str :String) :String
@@ -260,10 +145,11 @@ class CmdProcessor
 
     private function printHelp() :String
     {
-        return "IHx Shell Commands:\n"
+        return "ihx shell commands:\n"
             + "  dir      list all currently defined variables\n"
             + "  builtins list all builtin classes\n"
             + "  clear    delete all variables from the current session\n"
+            + "  print    dump the temp neko program to the console\n"
             + "  help     print this message\n"
             + "  exit     close this session\n"
             + "  quit     close this session";

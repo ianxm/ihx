@@ -28,7 +28,7 @@ import ihx.CmdProcessor;
 **/
 class IHx
 {
-    private static var VERSION = "0.1.1";
+    private static var VERSION = "0.2.0";
 
     /** the source for commands **/
     private var console :ConsoleReader;
@@ -56,7 +56,7 @@ class IHx
     **/
     public function run()
     {
-        Lib.println("haXe interactive shell v" + VERSION);
+        Lib.println("haxe interactive shell v" + VERSION);
         Lib.println("type \"help\" for help");
 
         var processor = new CmdProcessor();
@@ -77,18 +77,16 @@ class IHx
                 }
                 catch (ex:CmdError)
                 {
-                    if(Type.enumConstructor(ex) == "IncompleteStatement")
+                    switch (ex)
                     {
-                        console.cmd.prompt = ".. "; // continue prompt
-                        Lib.print(".. ");
-                        continue;
+                    case IncompleteStatement:
+                        {
+                            console.cmd.prompt = ".. "; // continue prompt
+                            Lib.print(".. ");
+                            continue;
+                        }
+                    case InvalidStatement(msg): Lib.println(msg);
                     }
-                    else if (Type.enumConstructor(ex) == "InvalidStatement")
-                    {
-                        Lib.println("Syntax error. " + ex);
-                    }
-                    else
-                        Lib.println("Execution error. " + Type.enumParameters(ex)[0]);
                 }
 
                 // restart after an error or completed command

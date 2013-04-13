@@ -18,6 +18,8 @@
 
 package ihx;
 
+import neko.Lib;
+
 typedef CodeSet = {
     var arrow :Int;
     var up :Int;
@@ -43,7 +45,7 @@ class ConsoleReader
     {
         var cr = new ConsoleReader();
         var cmdStr = cr.readLine();
-        neko.Lib.println("\n" + cmdStr);
+        Lib.println("\n" + cmdStr);
     }
 
     public function new()
@@ -66,6 +68,7 @@ class ConsoleReader
         while( true )
         {
             code = Sys.getChar(false);
+            // Lib.println("\ngot: " + code +"\n");
             if( code == codeSet.arrow ) // arrow keys
             {
                 if( neko.Sys.systemName() != "Windows" )
@@ -83,20 +86,20 @@ class ConsoleReader
             {
                 switch( code )
                 {
-                case codeSet.ctrlc: { neko.Lib.println(""); neko.Sys.exit(1); }
-                case codeSet.enter: { neko.Lib.println(""); history.add(cmd.toString()); return cmd.toString(); }
+                case codeSet.ctrlc: { Lib.println(""); neko.Sys.exit(1); }
+                case codeSet.enter: { Lib.println(""); history.add(cmd.toString()); return cmd.toString(); }
                     //case 126: cmd.del(); // del shares code with tilde?
                 case codeSet.backspace: cmd.backspace();
                 default: cmd.addChar(String.fromCharCode(code));
                 }
             }
-            neko.Lib.print(cmd.toConsole());
+            Lib.print(cmd.toConsole());
         }
         return "";
     }
 
     public function clear(len)
     {
-        neko.Lib.print(cmd.clearString());
+        Lib.print(cmd.clearString());
     }
 }
