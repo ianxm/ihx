@@ -94,7 +94,7 @@ class CmdProcessor
     {
         var vars = program.getVars();
         if( vars.isEmpty() )
-            return "There are currently no variables";
+            return "(none)";
         return wordWrap(vars.join(", "));
     }
 
@@ -104,7 +104,7 @@ class CmdProcessor
     private function clearVars() :String
     {
         program = new Program();
-        return "Cleared";
+        return "cleared";
     }
 
     /**

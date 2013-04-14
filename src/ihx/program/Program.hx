@@ -11,9 +11,9 @@ class Program
     private var cleanUp  :List<Statement>;                     // close files, etc?
     private var suppressOutput :Bool;                          // if false, print the result of the last command
     private static var getVarRegex        :EReg = ~/\s*([a-zA-Z][a-zA-Z0-9_]*).*/;
-    private static var getVarTypeRegex    :EReg = ~/\s*([a-zA-Z][a-zA-Z0-9_]*)\s*:\s*([a-zA-Z][a-zA-Z0-9<>_]+).*/;
+    private static var getVarTypeRegex    :EReg = ~/\s*([a-zA-Z][a-zA-Z0-9_]*)\s*:\s*([a-zA-Z][a-zA-Z0-9<>_\- ]+).*/;
     private static var getVarValRegex     :EReg = ~/\s*([a-zA-Z][a-zA-Z0-9_]*)\s*=\s*(.*)/;
-    private static var getVarTypeValRegex :EReg = ~/\s*([a-zA-Z][a-zA-Z0-9_]*)\s*:\s*([a-zA-Z][a-zA-Z0-9<>_]+)\s*=\s*(.*)/;
+    private static var getVarTypeValRegex :EReg = ~/\s*([a-zA-Z][a-zA-Z0-9_]*)\s*:\s*([a-zA-Z][a-zA-Z0-9<>_\- ]+)\s*=\s*(.*)/;
 
     public function new()
     {
@@ -90,13 +90,8 @@ class Program
         var ret = new Array<String>();
         for( ii in vars.keys() )
             ret.push(ii);
-        ret.sort( strCmp );
+        ret.sort( Reflect.compare );
         return ret.list();
-    }
-
-    public static function strCmp(a :String, b :String) :Int
-    { 
-        return (b<a)? 1 : (b>a)? -1 : 0; 
     }
 
     /**
