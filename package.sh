@@ -2,20 +2,22 @@
 
 if [ -e "ihx" ];
 then
-    rm -Rf ihx
-    mkdir ihx
+    rm -Rf dist
+    mkdir dist
 fi
 
-cp -Rupv src/ihx ihx
-cp README ihx
-cp doc/LICENSE ihx
-cp doc/haxelib.xml ihx
-cp bin/ihx.n ihx/run.n
+cp -Rupv src/ihx dist
+cp README.md dist
+cp doc/LICENSE dist
+cp doc/haxelib.xml dist
+cp bin/ihx.n dist/run.n
 
 if [ -e "ihx.zip" ];
 then
     rm ihx.zip
 fi
-zip -r ihx.zip ihx
+cd dist
+zip -r ../ihx.zip *
+cd ..
 
-rm -Rf ihx
+rm -Rf dist

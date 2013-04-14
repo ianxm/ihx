@@ -1,6 +1,6 @@
 <project name="ihx" url="http://github.com/ianxm/ihx" license="GPL">
     <user name="ianxm"/>
-    <description>ihx is an interactive haXe scripting shell</description>
-    <version name="0.1.1">fixes for haxe 2.10</version>
-    <depends name="hscript" version="1.7"/>
+    <description>ihx is an interactive haxe scripting shell</description>
+    <version name="0.2.0">compiles haxe and runs neko in the background</version>
+    <depends name="hxSet"/>
 </project>
