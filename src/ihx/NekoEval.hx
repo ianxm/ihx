@@ -4,6 +4,7 @@ import neko.Lib;
 import haxe.io.Eof;
 import sys.io.File;
 import sys.io.Process;
+import ihx.program.Program;
 
 class NekoEval
 {
@@ -15,8 +16,18 @@ class NekoEval
         var proc = new Process("haxe", ["-neko", "tmp/out.n", "-cp", "tmp", "-main", "Program.hx", "-cmd", "neko tmp/out.n"]);
         var sb = new StringBuf();
         try {
+            var pastOld = false;
             while( true )
-                sb.add(proc.stdout.readLine() +"\n");
+            {
+                var line = proc.stdout.readLine();
+                if( !pastOld && line==Program.separator )
+                {
+                    pastOld = true;
+                    continue;
+                }
+                if( pastOld )
+                    sb.add(line +"\n");
+            }
         }
         catch ( eof :Eof ) { }
         try {

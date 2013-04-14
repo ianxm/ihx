@@ -5,11 +5,14 @@ using Lambda;
 
 class Program
 {
+    public static var separator = "~~~~~~~~~~~";
+
     private var vars     :Hash<Var>;                           // variable declarations
     private var imports  :List<Statement>;                     // import statements
     private var commands :List<Statement>;                     // commands
     private var cleanUp  :List<Statement>;                     // close files, etc?
     private var suppressOutput :Bool;                          // if false, print the result of the last command
+
     private static var getVarRegex        :EReg = ~/\s*([a-zA-Z][a-zA-Z0-9_]*).*/;
     private static var getVarTypeRegex    :EReg = ~/\s*([a-zA-Z][a-zA-Z0-9_]*)\s*:\s*([a-zA-Z][a-zA-Z0-9<>_\- ]+).*/;
     private static var getVarValRegex     :EReg = ~/\s*([a-zA-Z][a-zA-Z0-9_]*)\s*=\s*(.*)/;
@@ -116,7 +119,11 @@ class Program
         sb.add("\n");
 
         for( ii in commands )                               // old commands
+        {
+            if( ii.isNew )
+                sb.add("        Lib.println('"+separator+"');\n");
             sb.add("        "+ ii.toString() +"\n");
+        }
 
         sb.add("    }\n");
         sb.add("}\n");
