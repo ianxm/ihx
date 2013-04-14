@@ -7,6 +7,9 @@ class Program
 {
     public static var separator = "~~~~~~~~~~~";
 
+    // TODO should prevent network calls?
+    // TODO could handle typedefs/enums like vars, would need a section above main function
+
     private var vars     :Hash<Var>;                           // variable declarations
     private var imports  :List<Statement>;                     // import statements
     private var commands :List<Statement>;                     // commands
@@ -110,7 +113,7 @@ class Program
 
         sb.add("\n");
 
-        sb.add("class Program {\n");
+        sb.add("class IhxProgram {\n");
         sb.add("    public static function main() {\n");
 
         for( ii in vars.keys() )                            // vars

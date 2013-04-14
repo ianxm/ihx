@@ -115,6 +115,12 @@ the following is an example of an ihx session:
     >> nameRe.matched(1)
     charlie
 
+    >> var d = { one: 1, two: "two" }
+    { one => 1, two => two }
+
+    >> haxe.Json.stringify(d)
+    {"one":1,"two","two"}
+
     >> quit
 
 

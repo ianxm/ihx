@@ -4,16 +4,18 @@ import neko.Lib;
 import haxe.io.Eof;
 import sys.io.File;
 import sys.io.Process;
+import sys.FileSystem;
 import ihx.program.Program;
 
 class NekoEval
 {
     private static var errRegex = ~/.*Program.hx:.* characters [0-9\-]+ : (.*)/;
+    private static var tmpDir = (Sys.systemName()=="Linux") ? "/tmp" : Sys.getEnv("TEMP");
 
     public static function evaluate(progStr)
     {
-        File.saveContent("tmp/Program.hx", progStr);
-        var proc = new Process("haxe", ["-neko", "tmp/out.n", "-cp", "tmp", "-main", "Program.hx", "-cmd", "neko tmp/out.n"]);
+        File.saveContent(tmpDir+"/IhxProgram.hx", progStr);
+        var proc = new Process("haxe", ["-neko", tmpDir+"/ihx_out.n", "-cp", tmpDir, "-main", "IhxProgram", "-cmd", "neko "+tmpDir+"/ihx_out.n"]);
         var sb = new StringBuf();
         try {
             var pastOld = false;
@@ -41,6 +43,11 @@ class NekoEval
             }
         }
         catch ( eof :Eof ) { }
+
+        if( FileSystem.exists(tmpDir+"/IhxProgram.hx") )
+            FileSystem.deleteFile(tmpDir+"/IhxProgram.hx");
+        if( FileSystem.exists(tmpDir+"/ihx_out.n") )
+            FileSystem.deleteFile(tmpDir+"/ihx_out.n");
 
         if( proc.exitCode()!=0 )
             throw sb.toString();
