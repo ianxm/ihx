@@ -8,7 +8,6 @@ class Program
     public static var separator = "~~~~~~~~~~~";
 
     // TODO should prevent network calls?
-    // TODO could handle typedefs/enums like vars, would need a section above main function
 
     private var defs     :Hash<Def>;                           // typedef/enum declarations
     private var vars     :Hash<Var>;                           // variable declarations

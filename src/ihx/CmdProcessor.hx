@@ -39,17 +39,22 @@ class CmdProcessor
     /** controls temp program text */
     private var program :Program;
 
+    /** name of new lib to include in build */
+    private var newLib :String;
+
     public function new()
     {
         program = new Program();
         sb = new StringBuf();
         commands = new Hash<Void->String>();
+        commands.set("dir", listVars);
+        commands.set("lib", addRmLib);
+        commands.set("libs", listLibs);
+        commands.set("clear", clearVars);
+        commands.set("print", printProgram);
+        commands.set("help", printHelp);
         commands.set("exit", callback(neko.Sys.exit,0));
         commands.set("quit", callback(neko.Sys.exit,0));
-        commands.set("dir", listVars);
-        commands.set("print", printProgram);
-        commands.set("clear", clearVars);
-        commands.set("help", printHelp);
     }
 
     /**
@@ -67,11 +72,17 @@ class CmdProcessor
         var ret;
         try
         {
-            if( commands.exists(sb.toString()) )            // handle ihx commands
-                ret = commands.get(sb.toString())();
+            var str = sb.toString();
+            if( str.startsWith("lib ") )                    // sloppy way of passing args around
+            {
+                newLib = str.substr(4);
+                str = "lib";
+            }
+            if( commands.exists(str) )                      // handle ihx commands
+                ret = commands.get(str)();
             else                                            // execute a haxe statement
             {
-                program.addStatement(sb.toString());
+                program.addStatement(str);
                 ret = NekoEval.evaluate(program.getProgram());
                 program.acceptLastCmd(true);
             }
@@ -99,10 +110,28 @@ class CmdProcessor
     }
 
     /**
+       add a haxelib library to the compile command
+    **/
+    private function addRmLib() :String
+    {
+        NekoEval.libs.push(newLib);
+        return "added: " + newLib;
+    }
+
+    /**
+       list haxelib libraries
+    **/
+    private function listLibs() :String
+    {
+        return "libs: " + wordWrap(NekoEval.libs.join(", "));
+    }
+
+    /**
        reset workspace
     **/
     private function clearVars() :String
     {
+        NekoEval.libs = [];
         program = new Program();
         return "cleared";
     }
@@ -146,12 +175,14 @@ class CmdProcessor
     private function printHelp() :String
     {
         return "ihx shell commands:\n"
-            + "  dir      list all currently defined variables\n"
-            + "  builtins list all builtin classes\n"
-            + "  clear    delete all variables from the current session\n"
-            + "  print    dump the temp neko program to the console\n"
-            + "  help     print this message\n"
-            + "  exit     close this session\n"
-            + "  quit     close this session";
+            + "  dir          list all currently defined variables\n"
+            + "  lib +[name]  add a haxelib library\n"
+            + "  lib -[name]  remove a haxelib library\n"
+            + "  libs         list haxelib libraries that have been added\n"
+            + "  clear        delete all variables from the current session\n"
+            + "  print        dump the temp neko program to the console\n"
+            + "  help         print this message\n"
+            + "  exit         close this session\n"
+            + "  quit         close this session";
     }
 }
