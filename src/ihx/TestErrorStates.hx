@@ -27,7 +27,7 @@ class TestErrorStates extends haxe.unit.TestCase
         var proc = new CmdProcessor();
         try
         {
-            var ret = proc.process("a=");
+            var ret = proc.process("var a=\\");
             assertTrue(false);
         }
         catch (ex:CmdError)
@@ -37,56 +37,5 @@ class TestErrorStates extends haxe.unit.TestCase
 
         var ret = proc.process("2");
         assertEquals('2', ret);
-    }
-
-    public function testIncompleteBlock()
-    {
-        var proc = new CmdProcessor();
-        try
-        {
-            var ret = proc.process("{a=1");
-            assertTrue(false);
-        }
-        catch (ex:CmdError)
-        {
-            assertEquals("IncompleteStatement", Type.enumConstructor(ex));
-        }
-
-        var ret = proc.process(";}");
-        assertEquals('1', ret);
-    }
-
-    public function testIncompleteQuote()
-    {
-        var proc = new CmdProcessor();
-        try
-        {
-            var ret = proc.process("a='multiline");
-            assertTrue(false);
-        }
-        catch (ex:CmdError)
-        {
-            assertEquals("IncompleteStatement", Type.enumConstructor(ex));
-        }
-
-        var ret = proc.process("string'");
-        assertEquals('multiline\nstring', ret);
-    }
-
-    public function testIncompleteLoop()
-    {
-        var proc = new CmdProcessor();
-        try
-        {
-            var ret = proc.process("for( ii in 0...4 )");
-            assertTrue(false);
-        }
-        catch (ex:CmdError)
-        {
-            assertEquals("IncompleteStatement", Type.enumConstructor(ex));
-        }
-
-        var ret = proc.process("a=ii; a");
-        assertEquals('3', ret);
     }
 }

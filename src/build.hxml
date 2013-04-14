@@ -1,9 +1,9 @@
-#-main ihx.TestSuite
-#-neko ../bin/tests.n
-#-lib hscript
-#-cmd neko ../bin/tests.n
+# -main ihx.TestSuite
+# -neko ../bin/tests.n
+# -lib hxSet
+# -cmd neko ../bin/tests.n
 
-#--next
+# --next
 
 -main ihx.IHx
 -neko ../bin/ihx.n

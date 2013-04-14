@@ -25,56 +25,51 @@ class TestSimpleStatements extends haxe.unit.TestCase
     public function testSetVar()
     {
         var proc = new CmdProcessor();
-        var ret = proc.process("a=1");
+        var ret = proc.process("var a=1");
         assertEquals("1", ret);
     }
 
     public function testSuppressedOutput()
     {
         var proc = new CmdProcessor();
-        var ret = proc.process("a=1;");
-        assertEquals(null, ret);
+        var ret = proc.process("var a=1;");
+        assertEquals("", ret);
         ret = proc.process("a");
         assertEquals("1", ret);
-    }
-
-    public function testSetTwoVars()
-    {
-        var proc = new CmdProcessor();
-        var ret = proc.process("a=1;b=2");
-        assertEquals("2", ret);
     }
 
     public function testCompute()
     {
         var proc = new CmdProcessor();
-        var ret = proc.process("a=1;b=2;c=a+b");
+        var ret = proc.process("var a=1;");
+        ret = proc.process("var b=2;");
+        ret = proc.process("var c=a+b");
         assertEquals("3", ret);
     }
 
     public function testString()
     {
         var proc = new CmdProcessor();
-        var ret = proc.process("a='one'");
+        var ret = proc.process("var a='one'");
         assertEquals("one", ret);
     }
 
     public function testVariablePersistence()
     {
         var proc = new CmdProcessor();
-        var ret = proc.process("a='one'");
+        var ret = proc.process("var a='one'");
         assertEquals("one", ret);
-        ret = proc.process("b='two'");
+        ret = proc.process("var b='two'");
         assertEquals("two", ret);
-        ret = proc.process("c=a+' '+b");
+        ret = proc.process("var c=a+' '+b");
         assertEquals("one two", ret);
     }
 
     public function testFunction()
     {
         var proc = new CmdProcessor();
-        var ret = proc.process("f=function(ii) { return ii*2; }");
-        assertEquals("#function:-1", ret);
+        var ret = proc.process("var f=function(ii) { return ii*2; }");
+        assertEquals("#function:1", ret);
         ret = proc.process("f(4)");
         assertEquals("8", ret);
     }

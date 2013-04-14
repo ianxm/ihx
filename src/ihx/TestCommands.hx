@@ -25,53 +25,55 @@ class TestCommands extends haxe.unit.TestCase
     public function testDir()
     {
         var proc = new CmdProcessor();
-        var ret = proc.process("a='one'");
+        var ret = proc.process("var a='one'");
         assertEquals("one", ret);
-        ret = proc.process("b='two'");
+        ret = proc.process("var b='two'");
         assertEquals("two", ret);
         ret = proc.process("dir");
-        assertEquals("Current variables: a, b", ret);
-    }
-
-    public function testBuiltins()
-    {
-        var proc = new CmdProcessor();
-        var ret = proc.process("a='one'");
-        assertEquals("one", ret);
-        ret = proc.process("b='two'");
-        assertEquals("two", ret);
-        ret = proc.process("builtins");
-        var ans = 'Builtins: Array, Class, Date, DateTools, Dynamic, EReg, Float, Hash, Int,
-     IntHash, IntIter, Lambda, List, Math, Reflect, Std, String, StringBuf,
-     StringTools, Type, Xml, haxe.BaseCode, haxe.FastCell, haxe.FastList, haxe.Firebug,
-     haxe.Http, haxe.Int32, haxe.Log, haxe.Md5, haxe.Public, haxe.Resource,
-     haxe.Serializer, haxe.Stack, haxe.Template, haxe.Timer, haxe.Unserializer';
-        assertEquals(ans, ret);
+        assertEquals("vars: a, b", ret);
     }
 
     public function testHelp()
     {
         var proc = new CmdProcessor();
         var ret = proc.process("help");
-        var ans = 'IHx Shell Commands:
-  dir      list all currently defined variables
-  builtins list all builtin classes
-  clear    delete all variables from the current session
-  help     print this message
-  exit     close this session
-  quit     close this session';
+        var ans = 'ihx shell commands:
+  dir            list all currently defined variables
+  addlib [name]  add a haxelib library to the search path
+  rmlib  [name]  remove a haxelib library from the search path
+  libs           list haxelib libraries that have been added
+  clear          delete all variables from the current session
+  print          dump the temp neko program to the console
+  help           print this message
+  exit           close this session
+  quit           close this session';
         assertEquals(ans, ret);
     }
 
     public function testClear()
     {
         var proc = new CmdProcessor();
-        var ret = proc.process("a='one'");
+        var ret = proc.process("var a='one'");
         assertEquals("one", ret);
-        ret = proc.process("b='two'");
+        ret = proc.process("var b='two'");
         assertEquals("two", ret);
         ret = proc.process("clear");
         ret = proc.process("dir");
-        assertEquals('There are currently no variables', ret);
+        assertEquals('vars: (none)', ret);
+    }
+
+    public function testLibs()
+    {
+        var proc = new CmdProcessor();
+        var ret = proc.process("libs");
+        assertEquals("libs: (none)", ret);
+
+        ret = proc.process("addlib hxSet");
+        ret = proc.process("libs");
+        assertEquals("libs: hxSet", ret);
+
+        ret = proc.process("rmlib hxSet");
+        ret = proc.process("libs");
+        assertEquals("libs: (none)", ret);
     }
 }
