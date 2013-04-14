@@ -13,7 +13,7 @@ class NekoEval
     public static var libs = new Set<String>();
 
     private static var errRegex = ~/.*Program.hx:.* characters [0-9\-]+ : (.*)/;
-    private static var tmpDir = (Sys.systemName()=="Linux") ? "/tmp" : Sys.getEnv("TEMP");
+    private static var tmpDir = (Sys.systemName()=="Windows") ? Sys.getEnv("TEMP") : "/tmp";
 
     public static function evaluate(progStr)
     {
