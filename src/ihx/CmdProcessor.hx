@@ -110,8 +110,8 @@ class CmdProcessor
     {
         var vars = program.getVars();
         if( vars.isEmpty() )
-            return "vars: (none)\n";
-        return wordWrap("vars: "+ vars.join(", ") +"\n");
+            return "vars: (none)";
+        return wordWrap("vars: "+ vars.join(", "));
     }
 
     /**
@@ -121,9 +121,9 @@ class CmdProcessor
     {
         var name = cmdStr.split(" ")[1];
         if( name==null || name.length==0 )
-            return "syntax error\n";
+            return "syntax error";
         NekoEval.libs.add(name);
-        return "added: " + name +"\n";
+        return "added: " + name;
     }
 
     /**
@@ -133,9 +133,9 @@ class CmdProcessor
     {
         var name = cmdStr.split(" ")[1];
         if( name == null || name.length==0 )
-            return "syntax error\n";
+            return "syntax error";
         NekoEval.libs.remove(function(ii) return ii==name);
-        return "removed: " + name +"\n";
+        return "removed: " + name;
     }
 
     /**
@@ -144,8 +144,8 @@ class CmdProcessor
     private function listLibs() :String
     {
         if( NekoEval.libs.length == 0 )
-            return "libs: (none)\n";
-        return "libs: " + wordWrap(Lambda.list(NekoEval.libs).join(", ") +"\n");
+            return "libs: (none)";
+        return "libs: " + wordWrap(Lambda.list(NekoEval.libs).join(", "));
     }
 
     /**
@@ -154,7 +154,7 @@ class CmdProcessor
     private function clearVars() :String
     {
         program = new Program();
-        return "cleared\n";
+        return "cleared";
     }
 
     /**

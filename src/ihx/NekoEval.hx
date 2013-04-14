@@ -51,7 +51,7 @@ class NekoEval
                     continue;
                 }
                 if( pastOld )
-                    sb.add(line +"\n");
+                    sb.add(line+"\n");
             }
         }
         catch ( eof :Eof ) { }
@@ -72,9 +72,9 @@ class NekoEval
         if( FileSystem.exists(tmpDir+"/ihx_out.n") )
             FileSystem.deleteFile(tmpDir+"/ihx_out.n");
 
+        var ret = sb.toString().substr(0, sb.toString().length-1);
         if( proc.exitCode()!=0 )
-            throw sb.toString();
-
-        return sb.toString();
-    }
+            throw ret;
+        return ret;
+   }
 }

@@ -73,7 +73,7 @@ class IHx
                 {
                     var ret = processor.process(console.readLine());
                     if( ret != null )
-                        Lib.println(ret);
+                        Lib.println(ret+"\n");
                 }
                 catch (ex:CmdError)
                 {
