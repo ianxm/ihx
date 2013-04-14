@@ -21,14 +21,19 @@ package ihx;
 import neko.Lib;
 
 typedef CodeSet = {
-    var arrow :Int;
-    var up :Int;
-    var down :Int;
-    var right :Int;
-    var left :Int;
+    var arrow     :Int;
+    var up        :Int;
+    var down      :Int;
+    var right     :Int;
+    var left      :Int;
     var backspace :Int;
-    var ctrlc :Int;
-    var enter :Int;
+    var ctrlc     :Int;
+    var enter     :Int;
+    var ctrla     :Int;
+    var ctrle     :Int;
+    var ctrlb     :Int;
+    var ctrlf     :Int;
+    var ctrld     :Int;
 }
 
 /**
@@ -55,10 +60,12 @@ class ConsoleReader
         history = new History();
         if( neko.Sys.systemName() == "Windows" )
             codeSet = {arrow: 224, up: 72, down: 80, right: 77, left: 75, 
-                       backspace: 8, ctrlc: 3, enter: 13};
+                       backspace: 8, ctrlc: 3, enter: 13,
+                       ctrla: 999, ctrle: 999, ctrlb: 999, ctrlf: 999, ctrld: 999 }; // TODO, get these
         else
             codeSet = {arrow: 27, up: 65, down: 66, right: 67, left: 68,
-                       backspace: 127, ctrlc: 3, enter: 13};
+                       backspace: 127, ctrlc: 3, enter: 13,
+                       ctrla: 1, ctrle: 5, ctrlb: 2, ctrlf: 6, ctrld: 4 };
     }
 
     // get a command from the console
@@ -88,9 +95,13 @@ class ConsoleReader
                 {
                 case codeSet.ctrlc: { Lib.println(""); neko.Sys.exit(1); }
                 case codeSet.enter: { Lib.println(""); history.add(cmd.toString()); return cmd.toString(); }
-                    //case 126: cmd.del(); // del shares code with tilde?
+                case codeSet.ctrld: cmd.del(); // del shares code with tilde?
+                case codeSet.ctrla: cmd.home();
+                case codeSet.ctrle: cmd.end();
+                case codeSet.ctrlf: cmd.cursorForward();
+                case codeSet.ctrlb: cmd.cursorBack();
                 case codeSet.backspace: cmd.backspace();
-                default: cmd.addChar(String.fromCharCode(code));
+                default: if( code>=32 && code<=125 ) cmd.addChar(String.fromCharCode(code));
                 }
             }
             Lib.print(cmd.toConsole());
