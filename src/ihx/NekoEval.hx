@@ -35,6 +35,7 @@ class NekoEval
 
     public static function evaluate(progStr)
     {
+        var ret = "";
         File.saveContent(tmpDir+"/IhxProgram.hx", progStr);
         var args = ["-neko", tmpDir+"/ihx_out.n", "-cp", tmpDir, "-main", "IhxProgram", "-cmd", "neko "+tmpDir+"/ihx_out.n"];
         libs.iter( function(ii){ args.push("-lib"); args.push(ii); });
@@ -52,6 +53,7 @@ class NekoEval
                 }
                 if( pastOld )
                     sb.add(line+"\n");
+                ret = sb.toString().substr(0, sb.toString().length-1);
             }
         }
         catch ( eof :Eof ) { }
@@ -63,6 +65,7 @@ class NekoEval
                     sb.add("error: "+ errRegex.matched(1) +"\n");
                 else
                     sb.add("error: "+ line +"\n");
+                ret = sb.toString();
             }
         }
         catch ( eof :Eof ) { }
@@ -72,7 +75,6 @@ class NekoEval
         if( FileSystem.exists(tmpDir+"/ihx_out.n") )
             FileSystem.deleteFile(tmpDir+"/ihx_out.n");
 
-        var ret = sb.toString().substr(0, sb.toString().length-1);
         if( proc.exitCode()!=0 )
             throw ret;
         return ret;

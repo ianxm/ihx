@@ -15,24 +15,68 @@ programming.
 - omitting the semicolon at the end of a statement prints the return
   value to the console
 
+- multiple statements on a line are allowed, but the trailing
+  semicolon is required (no 'var a=1; var b=2')
+
 - to enter a multiline statement, end each incomplete line with '\'
 
 - comments are not allowed
 
-- to change a variable's type, redeclare it.  for example:
 
-        >> var a = 1
-        1
+neko in the background
+----------------------
 
-        >> a = 1.2
-        error: Float should be Int
+the haxe compiler and neko vm can't be run with partial scripts so
+each line on input compiles and runs a script that is built up in
+memory during the ihx session.  this means that every valid statement
+in a session is re-run in order to evaluate each new statement.  while
+this works (and is barely noticeable since the haxe compiler is so
+fast) it may result in unexpected behaviors.
 
-        >> var a :Float = 1.2
-        1.2
+statements with side effects will be re-run after every statement.
+here is an example to illustrate:
 
-- statements with side effects (such as appending to a file) will not
-  work as expected since all valid statements in a session are
-  re-executed when each new statement is evaluated.
+     >> var fout = sys.io.File.append("file.txt");
+
+     >> fout.writeString("hello\n");
+
+     >> fin.close();
+
+at this point, the file contains two `hello` lines.  one was written
+after the second statement and the other after the third statement.
+if the file is opened with `write` instead of `append`, it will clear
+the file each time neko evaluates the script, and will result in a
+single `hello`.
+
+ihx does some special handling for variable declarations, so in some
+situations it is possible to change a variable's type by redeclaring
+it.  for example, this will work:
+
+    >> var a = 1
+    1
+
+    >> a = 1.2
+    error: Float should be Int
+
+    >> var a :Float = 1.2
+    1.2
+
+but this won't work:
+
+    >> var a = 1
+    1
+
+    >> a = "car"
+    error: Float should be Int
+
+    >> var a :String = "car"
+    error: Int should be String
+
+the problem here is that changing `a`'s type broke the first
+statement that assigned it to `1`.
+
+the full script can be dumped to the screen with the `print` command.
+it can be cleared with the `clear` command.
 
 
 installation
