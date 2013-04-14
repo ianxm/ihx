@@ -120,6 +120,8 @@ class CmdProcessor
     private function addLib() :String
     {
         var name = cmdStr.split(" ")[1];
+        if( name==null || name.length==0 )
+            return "syntax error";
         NekoEval.libs.add(name);
         return "added: " + name;
     }
@@ -130,6 +132,8 @@ class CmdProcessor
     private function rmLib() :String
     {
         var name = cmdStr.split(" ")[1];
+        if( name == null || name.length==0 )
+            return "syntax error";
         NekoEval.libs.remove(function(ii) return ii==name);
         return "removed: " + name;
     }
