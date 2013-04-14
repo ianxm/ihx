@@ -18,7 +18,16 @@ are being used, there are some differences.
 
 - comments are not allowed
 
-- to change a variable's type, redeclare it
+- to change a variable's type, redeclare it.  for example:
+
+    >> var a = 1
+    1
+    
+    >> a = 1.2
+    error: Float should be Int
+
+    >> var a :Float = 1.2
+    1.2
 
 - statements with side effects (such as appending to a file) will not
   work as expected since all valid statements in a session are
@@ -120,6 +129,16 @@ the following is an example of an ihx session:
 
     >> haxe.Json.stringify(d)
     {"one":1,"two","two"}
+
+    >> enum Color {\
+    .. RED;\
+    .. BLACK;\
+    .. }
+
+    >> typedef Car = { color:Color, name:String }
+
+    >> var car = { color: RED, name: "gus" }
+    { name => gus, color => RED }
 
     >> quit
 

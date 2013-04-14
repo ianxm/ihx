@@ -10,19 +10,24 @@ class Program
     // TODO should prevent network calls?
     // TODO could handle typedefs/enums like vars, would need a section above main function
 
+    private var defs     :Hash<Def>;                           // typedef/enum declarations
     private var vars     :Hash<Var>;                           // variable declarations
     private var imports  :List<Statement>;                     // import statements
     private var commands :List<Statement>;                     // commands
     private var cleanUp  :List<Statement>;                     // close files, etc?
     private var suppressOutput :Bool;                          // if false, print the result of the last command
 
-    private static var getVarRegex        :EReg = ~/\s*([a-zA-Z][a-zA-Z0-9_]*).*/;
-    private static var getVarTypeRegex    :EReg = ~/\s*([a-zA-Z][a-zA-Z0-9_]*)\s*:\s*([a-zA-Z][a-zA-Z0-9<>_\- ]+).*/;
-    private static var getVarValRegex     :EReg = ~/\s*([a-zA-Z][a-zA-Z0-9_]*)\s*=\s*(.*)/;
-    private static var getVarTypeValRegex :EReg = ~/\s*([a-zA-Z][a-zA-Z0-9_]*)\s*:\s*([a-zA-Z][a-zA-Z0-9<>_\- ]+)\s*=\s*(.*)/;
+    private static var varRegex        :EReg = ~/var \s*([a-zA-Z][a-zA-Z0-9_]*).*/;
+    private static var varTypeRegex    :EReg = ~/var \s*([a-zA-Z][a-zA-Z0-9_]*)\s*:\s*([a-zA-Z][a-zA-Z0-9<>_\- ]+).*/;
+    private static var varValRegex     :EReg = ~/var \s*([a-zA-Z][a-zA-Z0-9_]*)\s*=\s*(.*)/;
+    private static var varTypeValRegex :EReg = ~/var \s*([a-zA-Z][a-zA-Z0-9_]*)\s*:\s*([a-zA-Z][a-zA-Z0-9<>_\- ]+)\s*=\s*(.*)/;
+
+    private static var enumRegex    :EReg = ~/enum \s*([a-zA-Z][a-zA-Z0-9_]*)\s*({[^}]+})/;
+    private static var typedefRegex :EReg = ~/typedef \s*([a-zA-Z][a-zA-Z0-9_]*)\s*=\s*({[^}]+})/;
 
     public function new()
     {
+        defs     = new Hash<Def>();
         vars     = new Hash<Var>();
         imports  = new List<Statement>();
         commands = new List<Statement>();
@@ -35,29 +40,30 @@ class Program
     public function addStatement(stmt :String)
     {
         if( stmt.startsWith("import ") || stmt.startsWith("using "))
-        {
             imports.add(new Statement(stmt, true));
-        }
+        else if( enumRegex.match(stmt) )
+            defs.set(enumRegex.matched(1), new Def(enumRegex.matched(1), enumRegex.matched(2), "enum"));
+        else if( typedefRegex.match(stmt) )
+            defs.set(typedefRegex.matched(1), new Def(typedefRegex.matched(1), typedefRegex.matched(2), "typedef"));
         else if( stmt.startsWith("var ") ) // only allow one var per line, no 'var a,b,c;'
         {
-            stmt = stmt.substr(4);
-            if( getVarTypeValRegex.match(stmt) )
+            if( varTypeValRegex.match(stmt) )
             {
-                vars.set(getVarTypeValRegex.matched(1), new Var(getVarTypeValRegex.matched(1), getVarTypeValRegex.matched(2)));
-                commands.add(new Statement(getVarTypeValRegex.matched(1)+" = "+getVarTypeValRegex.matched(3)));
+                vars.set(varTypeValRegex.matched(1), new Var(varTypeValRegex.matched(1), varTypeValRegex.matched(2)));
+                commands.add(new Statement(varTypeValRegex.matched(1)+" = "+varTypeValRegex.matched(3)));
             }
-            else if( getVarTypeRegex.match(stmt) )
+            else if( varTypeRegex.match(stmt) )
             {
-                vars.set(getVarTypeRegex.matched(1), new Var(getVarTypeRegex.matched(1), getVarTypeRegex.matched(2)));
+                vars.set(varTypeRegex.matched(1), new Var(varTypeRegex.matched(1), varTypeRegex.matched(2)));
             }
-            else if( getVarValRegex.match(stmt) )
+            else if( varValRegex.match(stmt) )
             {
-                vars.set(getVarValRegex.matched(1), new Var(getVarValRegex.matched(1)));
-                commands.add(new Statement(getVarValRegex.matched(1)+" = "+getVarValRegex.matched(2)));
+                vars.set(varValRegex.matched(1), new Var(varValRegex.matched(1)));
+                commands.add(new Statement(varValRegex.matched(1)+" = "+varValRegex.matched(2)));
             }
-            else if( getVarRegex.match(stmt) )
+            else if( varRegex.match(stmt) )
             {
-                vars.set(getVarRegex.matched(1), new Var(getVarRegex.matched(1)));
+                vars.set(varRegex.matched(1), new Var(varRegex.matched(1)));
             }
         }
         else
@@ -73,6 +79,8 @@ class Program
     {
         if( val )
         {
+            for( ii in defs.keys() )
+                defs.get(ii).isNew = false;
             for( ii in vars.keys() )
                 vars.get(ii).isNew = false;
             imports.iter(  function(ii) ii.isNew = false );
@@ -80,6 +88,9 @@ class Program
         }
         else
         {
+            for( ii in defs.keys() )
+                if( defs.get(ii).isNew )
+                    defs.remove(ii);
             for( ii in vars.keys() )
                 if( vars.get(ii).isNew )
                     vars.remove(ii);
@@ -109,6 +120,11 @@ class Program
 
         sb.add("import neko.Lib;\n");                       // imports
         for( ii in imports )
+            sb.add(ii.toString() +"\n");
+
+        sb.add("\n");
+
+        for( ii in defs )                                   // typedefs and enums
             sb.add(ii.toString() +"\n");
 
         sb.add("\n");

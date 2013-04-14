@@ -2,7 +2,7 @@ package ihx.program;
 
 class Var
 {
-    public var isNew(default,default) :Bool;
+    public var isNew :Bool;
     private var name :String;
     private var type :String;
 
