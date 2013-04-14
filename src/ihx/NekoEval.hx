@@ -28,16 +28,30 @@ import ihx.program.Program;
 
 class NekoEval
 {
-    public static var libs = new Set<String>();
+    public var libs(default,null) :Set<String>;
+    public var tmpSuffix(default,null) :String;
+    private var errRegex :EReg;
+    private var tmpDir :String;
+    private var tmpHxFname :String;
+    private var tmpHxPath :String;
+    private var tmpNekoPath :String;
 
-    private static var errRegex = ~/.*Program.hx:.* characters [0-9\-]+ : (.*)/;
-    private static var tmpDir = (Sys.systemName()=="Windows") ? Sys.getEnv("TEMP") : "/tmp";
+    public function new()
+    {
+        libs = new Set<String>();
+        errRegex = ~/.*IhxProgram_[0-9]*.hx:.* characters [0-9\-]+ : (.*)/;
+        tmpDir = (Sys.systemName()=="Windows") ? Sys.getEnv("TEMP") : "/tmp";
+        tmpSuffix = StringTools.lpad(Std.string(Std.random(9999)), "0", 4);
+        tmpHxFname = "IhxProgram_"+ tmpSuffix +".hx";
+        tmpHxPath = tmpDir +"/" + tmpHxFname;
+        tmpNekoPath = tmpDir +"/ihx_out_"+ tmpSuffix +".n";
+    }
 
-    public static function evaluate(progStr)
+    public function evaluate(progStr)
     {
         var ret = "";
-        File.saveContent(tmpDir+"/IhxProgram.hx", progStr);
-        var args = ["-neko", tmpDir+"/ihx_out.n", "-cp", tmpDir, "-main", "IhxProgram", "-cmd", "neko "+tmpDir+"/ihx_out.n"];
+        File.saveContent(tmpHxPath, progStr);
+        var args = ["-neko", tmpNekoPath, "-cp", tmpDir, "-main", tmpHxFname, "-cmd", "neko "+tmpNekoPath];
         libs.iter( function(ii){ args.push("-lib"); args.push(ii); });
         var proc = new Process("haxe", args);
         var sb = new StringBuf();
@@ -70,10 +84,10 @@ class NekoEval
         }
         catch ( eof :Eof ) { }
 
-        if( FileSystem.exists(tmpDir+"/IhxProgram.hx") )
-            FileSystem.deleteFile(tmpDir+"/IhxProgram.hx");
-        if( FileSystem.exists(tmpDir+"/ihx_out.n") )
-            FileSystem.deleteFile(tmpDir+"/ihx_out.n");
+        if( FileSystem.exists(tmpHxPath) )
+            FileSystem.deleteFile(tmpHxPath);
+        if( FileSystem.exists(tmpNekoPath) )
+            FileSystem.deleteFile(tmpNekoPath);
 
         if( proc.exitCode()!=0 )
             throw ret;

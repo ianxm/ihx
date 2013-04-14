@@ -33,6 +33,7 @@ class Program
     private var commands :List<Statement>;                     // commands
     private var cleanUp  :List<Statement>;                     // close files, etc?
     private var suppressOutput :Bool;                          // if false, print the result of the last command
+    private var tmpFileSuffix :String;                         // unique suffix appended to temp filenames
 
     private static var varRegex        :EReg = ~/var \s*([a-zA-Z][a-zA-Z0-9_]*).*/;
     private static var varTypeRegex    :EReg = ~/var \s*([a-zA-Z][a-zA-Z0-9_]*)\s*:\s*([a-zA-Z][a-zA-Z0-9<>_\- ]+).*/;
@@ -42,8 +43,9 @@ class Program
     private static var enumRegex    :EReg = ~/enum \s*([a-zA-Z][a-zA-Z0-9_]*)\s*({[^}]+})/;
     private static var typedefRegex :EReg = ~/typedef \s*([a-zA-Z][a-zA-Z0-9_]*)\s*=\s*({[^}]+})/;
 
-    public function new()
+    public function new(tmpFileSuffix :String)
     {
+        this.tmpFileSuffix = tmpFileSuffix;
         defs     = new Hash<Def>();
         vars     = new Hash<Var>();
         imports  = new List<Statement>();
@@ -146,7 +148,7 @@ class Program
 
         sb.add("\n");
 
-        sb.add("class IhxProgram {\n");
+        sb.add("class IhxProgram_"+tmpFileSuffix+" {\n");
         sb.add("    public static function main() {\n");
 
         for( ii in vars.keys() )                            // vars

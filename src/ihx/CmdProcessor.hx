@@ -36,6 +36,9 @@ class CmdProcessor
     /** hash connecting interpreter commands to the functions that implement them */
     private var commands :Hash<Dynamic>;
 
+    /** runs haxe compiler and neko vm */
+    private var nekoEval :NekoEval;
+
     /** controls temp program text */
     private var program :Program;
 
@@ -44,7 +47,8 @@ class CmdProcessor
 
     public function new()
     {
-        program = new Program();
+        nekoEval = new NekoEval();
+        program = new Program(nekoEval.tmpSuffix);
         sb = new StringBuf();
         commands = new Hash<Void->String>();
         commands.set("dir", listVars);
@@ -80,7 +84,7 @@ class CmdProcessor
             else                                            // execute a haxe statement
             {
                 program.addStatement(cmdStr);
-                ret = NekoEval.evaluate(program.getProgram());
+                ret = nekoEval.evaluate(program.getProgram());
                 program.acceptLastCmd(true);
             }
         }
@@ -122,7 +126,7 @@ class CmdProcessor
         var name = cmdStr.split(" ")[1];
         if( name==null || name.length==0 )
             return "syntax error";
-        NekoEval.libs.add(name);
+        nekoEval.libs.add(name);
         return "added: " + name;
     }
 
@@ -134,7 +138,7 @@ class CmdProcessor
         var name = cmdStr.split(" ")[1];
         if( name == null || name.length==0 )
             return "syntax error";
-        NekoEval.libs.remove(function(ii) return ii==name);
+        nekoEval.libs.remove(function(ii) return ii==name);
         return "removed: " + name;
     }
 
@@ -143,9 +147,9 @@ class CmdProcessor
     **/
     private function listLibs() :String
     {
-        if( NekoEval.libs.length == 0 )
+        if( nekoEval.libs.length == 0 )
             return "libs: (none)";
-        return "libs: " + wordWrap(Lambda.list(NekoEval.libs).join(", "));
+        return "libs: " + wordWrap(Lambda.list(nekoEval.libs).join(", "));
     }
 
     /**
@@ -153,7 +157,7 @@ class CmdProcessor
     **/
     private function clearVars() :String
     {
-        program = new Program();
+        program = new Program(nekoEval.tmpSuffix);
         return "cleared";
     }
 
