@@ -28,7 +28,7 @@ import ihx.CmdProcessor;
 **/
 class IHx
 {
-    private static var VERSION = "0.2.0";
+    private static var VERSION = "0.2.1";
 
     /** the source for commands **/
     private var console :ConsoleReader;

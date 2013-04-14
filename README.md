@@ -123,7 +123,7 @@ example
 
 the following is an example of an ihx session:
 
-    haxe interactive shell v0.2.0
+    haxe interactive shell v0.2.1
     type "help" for help
     >> var a=1
     1
