@@ -10,7 +10,7 @@ import ihx.program.Program;
 
 class NekoEval
 {
-    public static var libs = [];
+    public static var libs = new Set<String>();
 
     private static var errRegex = ~/.*Program.hx:.* characters [0-9\-]+ : (.*)/;
     private static var tmpDir = (Sys.systemName()=="Linux") ? "/tmp" : Sys.getEnv("TEMP");

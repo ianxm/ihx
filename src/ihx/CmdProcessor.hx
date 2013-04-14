@@ -40,7 +40,7 @@ class CmdProcessor
     private var program :Program;
 
     /** name of new lib to include in build */
-    private var newLib :String;
+    private var cmdStr :String;
 
     public function new()
     {
@@ -48,7 +48,8 @@ class CmdProcessor
         sb = new StringBuf();
         commands = new Hash<Void->String>();
         commands.set("dir", listVars);
-        commands.set("lib", addRmLib);
+        commands.set("addlib", addLib);
+        commands.set("rmlib", rmLib);
         commands.set("libs", listLibs);
         commands.set("clear", clearVars);
         commands.set("print", printProgram);
@@ -72,17 +73,13 @@ class CmdProcessor
         var ret;
         try
         {
-            var str = sb.toString();
-            if( str.startsWith("lib ") )                    // sloppy way of passing args around
-            {
-                newLib = str.substr(4);
-                str = "lib";
-            }
-            if( commands.exists(str) )                      // handle ihx commands
-                ret = commands.get(str)();
+            cmdStr = sb.toString();
+            var cmd = firstWord(cmdStr);
+            if( commands.exists(cmd) )                      // handle ihx commands
+                ret = commands.get(cmd)();
             else                                            // execute a haxe statement
             {
-                program.addStatement(str);
+                program.addStatement(cmdStr);
                 ret = NekoEval.evaluate(program.getProgram());
                 program.acceptLastCmd(true);
             }
@@ -98,6 +95,14 @@ class CmdProcessor
         return (ret==null) ? null : Std.string(ret);
     }
 
+    private function firstWord(str :String) :String
+    {
+        var space = str.indexOf(" ");
+        if( space == -1 )
+            return str;
+        return str.substr(0, space);
+    }
+                
     /**
        return a list of all user defined variables
     **/
@@ -112,10 +117,21 @@ class CmdProcessor
     /**
        add a haxelib library to the compile command
     **/
-    private function addRmLib() :String
+    private function addLib() :String
     {
-        NekoEval.libs.push(newLib);
-        return "added: " + newLib;
+        var name = cmdStr.split(" ")[1];
+        NekoEval.libs.add(name);
+        return "added: " + name;
+    }
+
+    /**
+       remove a haxelib library from the compile command
+    **/
+    private function rmLib() :String
+    {
+        var name = cmdStr.split(" ")[1];
+        NekoEval.libs.remove(function(ii) return ii==name);
+        return "removed: " + name;
     }
 
     /**
@@ -123,7 +139,9 @@ class CmdProcessor
     **/
     private function listLibs() :String
     {
-        return "libs: " + wordWrap(NekoEval.libs.join(", "));
+        if( NekoEval.libs.length == 0 )
+            return "libs: (none)";
+        return "libs: " + wordWrap(Lambda.list(NekoEval.libs).join(", "));
     }
 
     /**
@@ -131,7 +149,6 @@ class CmdProcessor
     **/
     private function clearVars() :String
     {
-        NekoEval.libs = [];
         program = new Program();
         return "cleared";
     }
@@ -175,14 +192,14 @@ class CmdProcessor
     private function printHelp() :String
     {
         return "ihx shell commands:\n"
-            + "  dir          list all currently defined variables\n"
-            + "  lib +[name]  add a haxelib library\n"
-            + "  lib -[name]  remove a haxelib library\n"
-            + "  libs         list haxelib libraries that have been added\n"
-            + "  clear        delete all variables from the current session\n"
-            + "  print        dump the temp neko program to the console\n"
-            + "  help         print this message\n"
-            + "  exit         close this session\n"
-            + "  quit         close this session";
+            + "  dir            list all currently defined variables\n"
+            + "  addlib [name]  add a haxelib library to the search path\n"
+            + "  rmlib  [name]  remove a haxelib library from the search path\n"
+            + "  libs           list haxelib libraries that have been added\n"
+            + "  clear          delete all variables from the current session\n"
+            + "  print          dump the temp neko program to the console\n"
+            + "  help           print this message\n"
+            + "  exit           close this session\n"
+            + "  quit           close this session";
     }
 }

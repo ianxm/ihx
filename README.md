@@ -49,14 +49,15 @@ usage
 -----
 
 the ihx shell accepts the following commands:
-
-- dir      list all currently defined variables
-- builtins list all builtin classes
-- clear    clear all variables and reset the session
-- print    print the temp neko program source
-- help     print this message
-- exit     close this session
-- quit     close this session
+- dir            list all currently defined variables
+- addlib [name]  add a haxelib library to the search path
+- rmlib  [name]  remove a haxelib library from the search path
+- libs           list haxelib libraries that have been added
+- clear          delete all variables from the current session
+- print          dump the temp neko program to the console
+- help           print this message
+- exit           close this session
+- quit           close this session
 
 the above commands will be processed by ihx, all other input will be
 passed to the haxe compiler.  if output is not suppressed with a
