@@ -21,14 +21,14 @@ programming.
 
 - to change a variable's type, redeclare it.  for example:
 
-    >> var a = 1
-    1
-    
-    >> a = 1.2
-    error: Float should be Int
+        >> var a = 1
+        1
 
-    >> var a :Float = 1.2
-    1.2
+        >> a = 1.2
+        error: Float should be Int
+
+        >> var a :Float = 1.2
+        1.2
 
 - statements with side effects (such as appending to a file) will not
   work as expected since all valid statements in a session are
@@ -84,7 +84,7 @@ the following is an example of an ihx session:
     >> var a=1
     1
 
-    >> var b = 2;
+    >> var b = 2;                       <-- suppress output with trailing semicolon
 
     >> var c=a+b
     3
@@ -99,11 +99,11 @@ the following is an example of an ihx session:
     multiline
     string
 
-    >> str3='multiline ' \
+    >> str3='multiline ' \              <-- line continuation with '\'
     .. + 'command'
     multiline command
 
-    >> dir
+    >> dir                              <-- get list of variables in the session
     vars: a, b, c, str, str2, str3
 
     >> var arr = [1,4,2,5,1]
@@ -115,10 +115,10 @@ the following is an example of an ihx session:
     >> arr
     [1,1,2,4,5]
 
-    >> timestwo = function(ii) { return ii*2; }
+    >> var timestwo = function(ii) { return ii*2; }
     #function:1
 
-    >> using Lambda;
+    >> using Lambda;                    <-- 'using' and 'import' work as expected
 
     >> arr.map(timestwo)
     {2, 2, 4, 8, 10}
@@ -131,13 +131,13 @@ the following is an example of an ihx session:
     >> nameRe.matched(1)
     charlie
 
-    >> var d = { one: 1, two: "two" }
+    >> var d = { one: 1, two: "two" }   <-- anonymous objects work as expected
     { one => 1, two => two }
 
-    >> haxe.Json.stringify(d)
+    >> haxe.Json.stringify(d)           <-- standard library call without import
     {"one":1,"two","two"}
 
-    >> enum Color {\
+    >> enum Color {\                    <-- enums and typedefs work as expected
     .. RED;\
     .. BLACK;\
     .. }
@@ -147,10 +147,10 @@ the following is an example of an ihx session:
     >> var car = { color: RED, name: "gus" }
     { name => gus, color => RED }
 
-    >> addlib hxSet
+    >> addlib hxSet                     <-- add a haxelib library to the session
     added: hxSet
 
-    >> libs
+    >> libs                             <-- list haxelib libraries that have been added
     libs: hxSet
 
     >> var s = new Set<Int>();
