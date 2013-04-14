@@ -4,10 +4,11 @@ ihx - the interactive haxe shell
 overview
 --------
 
-ihx is an interactive neko shell.  each statement entered is run
+ihx is an interactive haxe shell.  each statement entered is run
 through the haxe compiler and neko interpreter, and the return value
 is displayed.  while the system's standard haxe and neko executables
-are being used, there are some differences.
+are being used, there are some differences from standard haxe
+programming.
 
 - only one var can be declared per line (no 'var a,b,c;')
 
@@ -31,7 +32,8 @@ are being used, there are some differences.
 
 - statements with side effects (such as appending to a file) will not
   work as expected since all valid statements in a session are
-  re-executed in order to evaluate each statement.
+  re-executed when each new statement is evaluated.
+
 
 installation
 ------------
@@ -49,6 +51,7 @@ usage
 -----
 
 the ihx shell accepts the following commands:
+
 - dir            list all currently defined variables
 - addlib [name]  add a haxelib library to the search path
 - rmlib  [name]  remove a haxelib library from the search path
@@ -61,11 +64,14 @@ the ihx shell accepts the following commands:
 
 the above commands will be processed by ihx, all other input will be
 passed to the haxe compiler.  if output is not suppressed with a
-trailing semicolon, the return value will be printed to stdout.
+trailing semicolon, the return value will be printed to the console.
 
-the standard prompt of '>> ' is displayed when ihx is waiting for
-input.  the '.. ' prompt indicates that the last line of input was an
+the standard prompt of `>> ` is displayed when ihx is waiting for
+input.  the `.. ` prompt indicates that the last line of input was an
 incomplete statement, and ihx is waiting for the rest.
+
+haxelib libraries can be made accessible with the `addlib` command.
+`clear` does not remove libs from the session.
 
 
 example
@@ -98,7 +104,7 @@ the following is an example of an ihx session:
     multiline command
 
     >> dir
-    a, b, c, str, str2, str3
+    vars: a, b, c, str, str2, str3
 
     >> var arr = [1,4,2,5,1]
     [1,4,2,5,1]
@@ -140,6 +146,20 @@ the following is an example of an ihx session:
 
     >> var car = { color: RED, name: "gus" }
     { name => gus, color => RED }
+
+    >> addlib hxSet
+    added: hxSet
+
+    >> libs
+    libs: hxSet
+
+    >> var s = new Set<Int>();
+
+    >> s.union([1,2,3,2,1,5,4,1])
+    5
+
+    >> s.list()
+    {4, 5, 3, 2, 1}
 
     >> quit
 
