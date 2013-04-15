@@ -61,7 +61,7 @@ class ConsoleReader
         if( neko.Sys.systemName() == "Windows" )
             codeSet = {arrow: 224, up: 72, down: 80, right: 77, left: 75, 
                        backspace: 8, ctrlc: 3, enter: 13,
-                       ctrla: 999, ctrle: 999, ctrlb: 999, ctrlf: 999, ctrld: 999 }; // TODO, get these
+                       ctrla: 1, ctrle: 5, ctrlb: 2, ctrlf: 6, ctrld: 4 };
         else
             codeSet = {arrow: 27, up: 65, down: 66, right: 67, left: 68,
                        backspace: 127, ctrlc: 3, enter: 13,
