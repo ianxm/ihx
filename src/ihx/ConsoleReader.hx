@@ -101,7 +101,7 @@ class ConsoleReader
                 case codeSet.ctrlf: cmd.cursorForward();
                 case codeSet.ctrlb: cmd.cursorBack();
                 case codeSet.backspace: cmd.backspace();
-                default: if( code>=32 && code<=125 ) cmd.addChar(String.fromCharCode(code));
+                default: if( code>=32 && code<=126 ) cmd.addChar(String.fromCharCode(code));
                 }
             }
             Lib.print(cmd.toConsole());
