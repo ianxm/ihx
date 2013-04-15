@@ -136,16 +136,16 @@ the following is an example of an ihx session:
     >> Math.sin(c)
     0.1411200081
 
-    >> str = 'this is a string'
+    >> var str = 'this is a string'
     this is a string
 
-    >> str2='multiline\nstring'
-    multiline
+    >> var str2='multi-line\nstring'
+    multi-line
     string
 
-    >> str3='multiline ' \              <-- line continuation with '\'
+    >> var str3='multi-line ' \         <-- line continuation with '\'
     .. + 'command'
-    multiline command
+    multi-line command
 
     >> dir                              <-- get list of variables in the session
     vars: a, b, c, str, str2, str3
@@ -154,7 +154,7 @@ the following is an example of an ihx session:
     [1,4,2,5,1]
 
     >> arr.sort(Reflect.compare)
-    null
+    null                                <-- sort's return type is void
 
     >> arr
     [1,1,2,4,5]
