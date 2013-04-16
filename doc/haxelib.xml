@@ -1,6 +1,6 @@
 <project name="ihx" url="http://github.com/ianxm/ihx" license="GPL">
     <user name="ianxm"/>
     <description>ihx is an interactive haxe scripting shell</description>
-    <version name="0.2.1">added unique suffix to tmp files</version>
+    <version name="0.2.1">fixes for windows</version>
     <depends name="hxSet"/>
 </project>
