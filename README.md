@@ -6,9 +6,28 @@ overview
 
 ihx is an interactive haxe shell.  each statement entered is run
 through the haxe compiler and neko interpreter, and the return value
-is displayed.  while the system's standard haxe and neko executables
-are being used, there are some differences from standard haxe
-programming.
+is displayed.
+
+
+installation
+------------
+
+ihx can be installed and run through haxelib with the commands:
+
+    haxelib install ihx
+
+    haxelib run ihx
+
+alternatively, an executable can be obtained either through the
+project repository or by making it from the "run.n" file included in
+the haxelib distribution.
+
+
+neko in the background
+----------------------
+
+while the system's standard haxe and neko executables are being used,
+not all valid haxe statements will work in ihx.
 
 - only one var can be declared per line (no 'var a,b,c;')
 
@@ -23,8 +42,8 @@ programming.
 - comments are not allowed
 
 
-neko in the background
-----------------------
+side effects
+------------
 
 the haxe compiler and neko vm can't be run with partial scripts so
 each line on input compiles and runs a script that is built up in
@@ -79,32 +98,20 @@ the full script can be dumped to the screen with the `print` command.
 it can be cleared with the `clear` command.
 
 
-installation
-------------
-
-ihx can be run through haxelib with the command:
-
-    haxelib run ihx
-
-alternatively, an executable can be obtained either through the
-project repository or by making it from the "run.n" file included in
-the haxelib distribution.
-
-
 usage
 -----
 
 the ihx shell accepts the following commands:
 
-- dir            list all currently defined variables
-- addlib [name]  add a haxelib library to the search path
-- rmlib  [name]  remove a haxelib library from the search path
-- libs           list haxelib libraries that have been added
-- clear          delete all variables from the current session
-- print          dump the temp neko program to the console
-- help           print this message
-- exit           close this session
-- quit           close this session
+- `dir`            list all currently defined variables
+- `addlib [name]`  add a haxelib library to the search path
+- `rmlib  [name]`  remove a haxelib library from the search path
+- `libs`           list haxelib libraries that have been added
+- `clear`          delete all variables from the current session
+- `print`          dump the temp neko program to the console
+- `help`           print this message
+- `exit`           close this session
+- `quit`           close this session
 
 the above commands will be processed by ihx, all other input will be
 passed to the haxe compiler.  if output is not suppressed with a
