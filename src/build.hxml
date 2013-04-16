@@ -7,5 +7,4 @@
 
 -main ihx.IHx
 -neko ../bin/ihx.n
--lib hxSet
 -cmd nekotools boot ../bin/ihx.n

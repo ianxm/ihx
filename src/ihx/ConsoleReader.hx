@@ -58,7 +58,7 @@ class ConsoleReader
         code = 0;
         cmd = new PartialCommand();
         history = new History();
-        if( neko.Sys.systemName() == "Windows" )
+        if( std.Sys.systemName() == "Windows" )
             codeSet = {arrow: 224, up: 72, down: 80, right: 77, left: 75, 
                        backspace: 8, ctrlc: 3, enter: 13,
                        ctrla: 1, ctrle: 5, ctrlb: 2, ctrlf: 6, ctrld: 4 };
@@ -78,30 +78,30 @@ class ConsoleReader
             // Lib.println("\ngot: " + code +"\n");
             if( code == codeSet.arrow ) // arrow keys
             {
-                if( neko.Sys.systemName() != "Windows" )
+                if( std.Sys.systemName() != "Windows" )
                     Sys.getChar(false); // burn extra char
                 code = Sys.getChar(false);
                 switch( code )
                 {
-                case codeSet.up:    { clear(cmd); cmd.set(history.prev()); }
-                case codeSet.down:  { clear(cmd); cmd.set(history.next()); }
-                case codeSet.right: cmd.cursorForward();
-                case codeSet.left:  cmd.cursorBack();
+                case _ if(code == codeSet.up):    { clear(cmd); cmd.set(history.prev()); }
+                case _ if(code == codeSet.down):  { clear(cmd); cmd.set(history.next()); }
+                case _ if(code == codeSet.right): cmd.cursorForward();
+                case _ if(code == codeSet.left):  cmd.cursorBack();
                 }
             }
             else
             {
                 switch( code )
                 {
-                case codeSet.ctrlc: { Lib.println(""); neko.Sys.exit(1); }
-                case codeSet.enter: { Lib.println(""); history.add(cmd.toString()); return cmd.toString(); }
-                case codeSet.ctrld: cmd.del(); // del shares code with tilde?
-                case codeSet.ctrla: cmd.home();
-                case codeSet.ctrle: cmd.end();
-                case codeSet.ctrlf: cmd.cursorForward();
-                case codeSet.ctrlb: cmd.cursorBack();
-                case codeSet.backspace: cmd.backspace();
-                default: if( code>=32 && code<=126 ) cmd.addChar(String.fromCharCode(code));
+                case _ if(code == codeSet.ctrlc): { Lib.println(""); std.Sys.exit(1); }
+                case _ if(code == codeSet.enter): { Lib.println(""); history.add(cmd.toString()); return cmd.toString(); }
+                case _ if(code == codeSet.ctrld): cmd.del(); // del shares code with tilde?
+                case _ if(code == codeSet.ctrla): cmd.home();
+                case _ if(code == codeSet.ctrle): cmd.end();
+                case _ if(code == codeSet.ctrlf): cmd.cursorForward();
+                case _ if(code == codeSet.ctrlb): cmd.cursorBack();
+                case _ if(code == codeSet.backspace): cmd.backspace();
+                case _ if( code>=32 && code<=126 ): cmd.addChar(String.fromCharCode(code));
                 }
             }
             Lib.print(cmd.toConsole());

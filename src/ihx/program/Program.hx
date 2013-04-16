@@ -18,6 +18,8 @@
 
 package ihx.program;
 
+import haxe.ds.StringMap;
+
 using StringTools;
 using Lambda;
 
@@ -27,8 +29,8 @@ class Program
 
     // TODO should prevent network calls?
 
-    private var defs     :Hash<Def>;                           // typedef/enum declarations
-    private var vars     :Hash<Var>;                           // variable declarations
+    private var defs     :StringMap<Def>;                           // typedef/enum declarations
+    private var vars     :StringMap<Var>;                           // variable declarations
     private var imports  :List<Statement>;                     // import statements
     private var commands :List<Statement>;                     // commands
     private var cleanUp  :List<Statement>;                     // close files, etc?
@@ -46,8 +48,8 @@ class Program
     public function new(tmpFileSuffix :String)
     {
         this.tmpFileSuffix = tmpFileSuffix;
-        defs     = new Hash<Def>();
-        vars     = new Hash<Var>();
+        defs     = new StringMap<Def>();
+        vars     = new StringMap<Var>();
         imports  = new List<Statement>();
         commands = new List<Statement>();
         cleanUp  = new List<Statement>();

@@ -18,7 +18,7 @@
 
 package ihx;
 
-import neko.io.FileInput;
+import sys.io.FileInput;
 import neko.Lib;
 import ihx.CmdProcessor;
 
@@ -28,7 +28,7 @@ import ihx.CmdProcessor;
 **/
 class IHx
 {
-    private static var VERSION = "0.2.1";
+    private static var VERSION = "0.2.2";
 
     /** the source for commands **/
     private var console :ConsoleReader;

@@ -18,7 +18,9 @@
 
 package ihx;
 
+using Lambda;
 using StringTools;
+import haxe.ds.StringMap;
 import neko.Lib;
 import ihx.program.Program;
 
@@ -34,7 +36,7 @@ class CmdProcessor
     private var sb :StringBuf;
   
     /** hash connecting interpreter commands to the functions that implement them */
-    private var commands :Hash<Dynamic>;
+    private var commands : StringMap<Dynamic>;
 
     /** runs haxe compiler and neko vm */
     private var nekoEval :NekoEval;
@@ -50,7 +52,7 @@ class CmdProcessor
         nekoEval = new NekoEval();
         program = new Program(nekoEval.tmpSuffix);
         sb = new StringBuf();
-        commands = new Hash<Void->String>();
+        commands = new StringMap<Void->String>();
         commands.set("dir", listVars);
         commands.set("addlib", addLib);
         commands.set("rmlib", rmLib);
@@ -58,8 +60,8 @@ class CmdProcessor
         commands.set("clear", clearVars);
         commands.set("print", printProgram);
         commands.set("help", printHelp);
-        commands.set("exit", callback(neko.Sys.exit,0));
-        commands.set("quit", callback(neko.Sys.exit,0));
+        commands.set("exit", function() std.Sys.exit(0));
+        commands.set("quit", function() std.Sys.exit(0));
     }
 
     /**
@@ -126,7 +128,7 @@ class CmdProcessor
         var name = cmdStr.split(" ")[1];
         if( name==null || name.length==0 )
             return "syntax error";
-        nekoEval.libs.add(name);
+        nekoEval.libs.push(name);
         return "added: " + name;
     }
 
@@ -138,7 +140,8 @@ class CmdProcessor
         var name = cmdStr.split(" ")[1];
         if( name == null || name.length==0 )
             return "syntax error";
-        nekoEval.libs.remove(function(ii) return ii==name);
+        var index = nekoEval.libs.indexOf(name);
+        if (index >= 0) nekoEval.libs.splice(0, index);
         return "removed: " + name;
     }
 
