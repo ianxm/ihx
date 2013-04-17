@@ -186,29 +186,57 @@ class Program
                         }
                     }
 
+                    function extractFunction(counter : Int, f : Function) {
+                        var buffer = new StringBuf();
+                        if(f.args.length == 0) buffer.add('Void -> ');
+                        else {
+                            
+                            for(arg in f.args) {
+                                pathExtractor(buffer, counter, arg.type);
+                                buffer.add(' -> ');
+                                counter++;
+                            }
+                        }
+
+                        if(f.ret == null) buffer.add('Void');
+                        else pathExtractor(buffer, counter, f.ret);
+
+                        return '${buffer.toString()} : $value';
+                    }
+
                     var counter = 0;
                     return switch(dyn.expr) {
                         case EBinop(OpAssign, _, e): 
                             switch(e.expr) {
-                                case EFunction(_, f): 
-                                    var buffer = new StringBuf();
-                                    if(f.args.length == 0) buffer.add('Void -> ');
-                                    else {
-                                        
-                                        for(arg in f.args) {
-                                            pathExtractor(buffer, counter, arg.type);
-                                            buffer.add(' -> ');
-                                            counter++;
-                                        }
+                                case EBlock(_): 'Block : {}';
+                                case EObjectDecl(_): 'Dynamic : {}';
+                                case EConst(CFloat(v)): 'Float : $v';
+                                case EConst(CInt(v)): 'Int : $v';
+                                case EConst(CString(v)): 'String : $v';
+                                case EConst(CRegexp(r, opt)): 'Regexp : ~/$r/$opt';
+                                case EConst(CIdent(v)): 
+                                    switch(v) {
+                                        case \"true\", \"false\": 'Bool : $v';
+                                        case \"null\": 'Null : $v';
+                                        case _: 'Unknown<${counter++}> : $v';
                                     }
-
-                                    if(f.ret == null) buffer.add('Void');
-                                    else pathExtractor(buffer, counter, f.ret);
-
-                                    '${buffer.toString()} : $value';
-                                case _: '$value';
+                                case EFunction(_, f):  extractFunction(counter, f);
+                                case _: 'Unknown<${counter++}> : $value';
                             }
-                        case _: '$value';
+                        case EBlock(_): 'Block : {}';
+                        case EObjectDecl(_): 'Dynamic : {}';
+                        case EConst(CFloat(v)): 'Float : $v';
+                        case EConst(CInt(v)): 'Int : $v';
+                        case EConst(CString(v)): 'String : $v';
+                        case EConst(CRegexp(r, opt)): 'Regexp : ~/$r/$opt';
+                        case EConst(CIdent(v)): 
+                            switch(v) {
+                                case \"true\", \"false\": 'Bool : $v';
+                                case \"null\": 'Null : $v';
+                                case _: 'Unknown<${counter++}> : $v';
+                            }
+                        case EFunction(_, f): extractFunction(counter, f);
+                        case _: 'Unknown<${counter++}> : $value';
                     }
                 }
             }
