@@ -139,6 +139,7 @@ class Program
     {
         var sb = new StringBuf();
 
+        sb.add("import haxe.macro.Expr;\n"); 
         sb.add("import neko.Lib;\n");                       // imports
         for( ii in imports )
             sb.add(ii.toString() +"\n");
@@ -167,6 +168,51 @@ class Program
 
         sb.add("    }\n");
         sb.add("}\n");
+
+        sb.add("
+            private class IhxASTFormatter {
+
+                public static function __AST_Output_Formatter(dyn:Expr, value:Dynamic) : String {
+                    function pathExtractor(buffer : StringBuf, counter : Int, type : Null<ComplexType>) {
+                        if (type == null) buffer.add('Unknown<$counter>');
+                        else {
+                            switch(type) {
+                                case TPath(p): 
+                                    var len = p.pack.length;
+                                    var pack = '${p.pack.join(\".\")}${((len > 0) ? \".\" : \"\")}';
+                                    buffer.add('${pack}${p.name}');
+                                case _: buffer.add('Unknown<$counter>');
+                            }
+                        }
+                    }
+
+                    var counter = 0;
+                    return switch(dyn.expr) {
+                        case EBinop(OpAssign, _, e): 
+                            switch(e.expr) {
+                                case EFunction(_, f): 
+                                    var buffer = new StringBuf();
+                                    if(f.args.length == 0) buffer.add('Void -> ');
+                                    else {
+                                        
+                                        for(arg in f.args) {
+                                            pathExtractor(buffer, counter, arg.type);
+                                            buffer.add(' -> ');
+                                            counter++;
+                                        }
+                                    }
+
+                                    if(f.ret == null) buffer.add('Void');
+                                    else pathExtractor(buffer, counter, f.ret);
+
+                                    '${buffer.toString()} : $value';
+                                case _: '$value';
+                            }
+                        case _: '$value';
+                    }
+                }
+            }
+        ");
         return sb.toString();
     }
 }
