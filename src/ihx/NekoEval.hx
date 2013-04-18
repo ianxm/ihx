@@ -28,6 +28,7 @@ import ihx.program.Program;
 
 class NekoEval
 {
+    public var classpath(default,null) :Set<String>;
     public var libs(default,null) :Set<String>;
     public var tmpSuffix(default,null) :String;
     private var errRegex :EReg;
@@ -38,6 +39,7 @@ class NekoEval
 
     public function new()
     {
+        classpath = new Set<String>();
         libs = new Set<String>();
         errRegex = ~/.*IhxProgram_[0-9]*.hx:.* characters [0-9\-]+ : (.*)/;
         tmpDir = (Sys.systemName()=="Windows") ? Sys.getEnv("TEMP") : "/tmp";
@@ -52,6 +54,7 @@ class NekoEval
         var ret = "";
         File.saveContent(tmpHxPath, progStr);
         var args = ["-neko", tmpNekoPath, "-cp", tmpDir, "-main", tmpHxFname, "-cmd", "neko "+tmpNekoPath];
+        classpath.iter( function(ii){ args.push("-cp"); args.push(ii); });
         libs.iter( function(ii){ args.push("-lib"); args.push(ii); });
         var proc = new Process("haxe", args);
         var sb = new StringBuf();

@@ -19,6 +19,7 @@
 package ihx;
 
 using StringTools;
+import sys.FileSystem;
 import neko.Lib;
 import ihx.program.Program;
 
@@ -52,6 +53,9 @@ class CmdProcessor
         sb = new StringBuf();
         commands = new Hash<Void->String>();
         commands.set("dir", listVars);
+        commands.set("addpath", addPath);
+        commands.set("rmpath", rmPath);
+        commands.set("path", listPath);
         commands.set("addlib", addLib);
         commands.set("rmlib", rmLib);
         commands.set("libs", listLibs);
@@ -116,6 +120,49 @@ class CmdProcessor
         if( vars.isEmpty() )
             return "vars: (none)";
         return wordWrap("vars: "+ vars.join(", "));
+    }
+
+    /**
+       add a dir to the classpath in the compile command
+    **/
+    private function addPath() :String
+    {
+        var name = cmdStr.substr(cmdStr.indexOf(" ")+1);
+        if( name==null || name.length==0 )
+            return "syntax error";
+        if( ! FileSystem.exists(name) )
+            return "path not found: " + name;
+        var path = FileSystem.fullPath(name);
+        nekoEval.classpath.add(path);
+        return "added: " + path;
+    }
+
+    /**
+       remove a dir from the classpath in the compile command
+    **/
+    private function rmPath() :String
+    {
+        var name = cmdStr.substr(cmdStr.indexOf(" ")+1);
+        if( name == null || name.length==0 )
+            return "syntax error";
+        if( ! FileSystem.exists(name) )
+            return "path not found: " + name;
+        var path = FileSystem.fullPath(name);
+        var count = nekoEval.classpath.remove( function(ii) return ii==path );
+        return if( count > 0 )
+            "removed: " + path;
+        else
+            "path not found: " + path;
+    }
+
+    /**
+       list the dirs in the classpath
+    **/
+    private function listPath() :String
+    {
+        if( nekoEval.classpath.length == 0 )
+            return "path: (empty)";
+        return "path: " + wordWrap(Lambda.list(nekoEval.classpath).join(", "));
     }
 
     /**
@@ -201,6 +248,9 @@ class CmdProcessor
     {
         return "ihx shell commands:\n"
             + "  dir            list all currently defined variables\n"
+            + "  addpath [name] add a dir to the classpath\n"
+            + "  rmpath  [name] remove a dir from the classpath\n"
+            + "  path           list the dirs in the classpath\n"
             + "  addlib [name]  add a haxelib library to the search path\n"
             + "  rmlib  [name]  remove a haxelib library from the search path\n"
             + "  libs           list haxelib libraries that have been added\n"
