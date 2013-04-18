@@ -20,6 +20,7 @@ package ihx;
 
 import neko.io.FileInput;
 import neko.Lib;
+import sys.FileSystem;
 import ihx.CmdProcessor;
 
 /**
@@ -56,6 +57,17 @@ class IHx
     **/
     public function run()
     {
+        if( Sys.args().length > 0 )
+        {
+            var cwd = Sys.args()[0];
+            if( !FileSystem.exists(cwd) )
+            {
+                Lib.println("usage: neko ihx [workingdir]");
+                Sys.exit(1);
+            }
+            Sys.setCwd(cwd);
+        }
+
         Lib.println("haxe interactive shell v" + VERSION);
         Lib.println("type \"help\" for help");
 
