@@ -37,7 +37,7 @@ class Statement {
 
     public function toString() {
         if( isNew && !suppressOutput )
-            return "Lib.println("+ text +");";
+            return 'Lib.println(IhxASTFormatter.__AST_Output_Formatter(macro $text, $text));';
         else
         {
             var addSemi = suppressOutput ? "" : ";";

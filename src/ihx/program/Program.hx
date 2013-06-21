@@ -18,6 +18,8 @@
 
 package ihx.program;
 
+import haxe.ds.StringMap;
+
 using StringTools;
 using Lambda;
 
@@ -27,8 +29,8 @@ class Program
 
     // TODO should prevent network calls?
 
-    private var defs     :Hash<Def>;                           // typedef/enum declarations
-    private var vars     :Hash<Var>;                           // variable declarations
+    private var defs     :StringMap<Def>;                           // typedef/enum declarations
+    private var vars     :StringMap<Var>;                           // variable declarations
     private var imports  :List<Statement>;                     // import statements
     private var commands :List<Statement>;                     // commands
     private var cleanUp  :List<Statement>;                     // close files, etc?
@@ -46,8 +48,8 @@ class Program
     public function new(tmpFileSuffix :String)
     {
         this.tmpFileSuffix = tmpFileSuffix;
-        defs     = new Hash<Def>();
-        vars     = new Hash<Var>();
+        defs     = new StringMap<Def>();
+        vars     = new StringMap<Var>();
         imports  = new List<Statement>();
         commands = new List<Statement>();
         cleanUp  = new List<Statement>();
@@ -137,6 +139,7 @@ class Program
     {
         var sb = new StringBuf();
 
+        sb.add("import haxe.macro.Expr;\n"); 
         sb.add("import neko.Lib;\n");                       // imports
         for( ii in imports )
             sb.add(ii.toString() +"\n");
@@ -165,6 +168,79 @@ class Program
 
         sb.add("    }\n");
         sb.add("}\n");
+
+        sb.add("
+            private class IhxASTFormatter {
+
+                public static function __AST_Output_Formatter(dyn:Expr, value:Dynamic) : String {
+                    function pathExtractor(buffer : StringBuf, counter : Int, type : Null<ComplexType>) {
+                        if (type == null) buffer.add('Unknown<$counter>');
+                        else {
+                            switch(type) {
+                                case TPath(p): 
+                                    var len = p.pack.length;
+                                    var pack = '${p.pack.join(\".\")}${((len > 0) ? \".\" : \"\")}';
+                                    buffer.add('${pack}${p.name}');
+                                case _: buffer.add('Unknown<$counter>');
+                            }
+                        }
+                    }
+
+                    function extractFunction(counter : Int, f : Function) {
+                        var buffer = new StringBuf();
+                        if(f.args.length == 0) buffer.add('Void -> ');
+                        else {
+                            
+                            for(arg in f.args) {
+                                pathExtractor(buffer, counter, arg.type);
+                                buffer.add(' -> ');
+                                counter++;
+                            }
+                        }
+
+                        if(f.ret == null) buffer.add('Void');
+                        else pathExtractor(buffer, counter, f.ret);
+
+                        return '${buffer.toString()} : $value';
+                    }
+
+                    var counter = 0;
+                    return switch(dyn.expr) {
+                        case EBinop(OpAssign, _, e): 
+                            switch(e.expr) {
+                                case EBlock(_): 'Block : {}';
+                                case EObjectDecl(_): 'Dynamic : {}';
+                                case EConst(CFloat(v)): 'Float : $v';
+                                case EConst(CInt(v)): 'Int : $v';
+                                case EConst(CString(v)): 'String : $v';
+                                case EConst(CRegexp(r, opt)): 'Regexp : ~/$r/$opt';
+                                case EConst(CIdent(v)): 
+                                    switch(v) {
+                                        case \"true\", \"false\": 'Bool : $v';
+                                        case \"null\": 'Null : $v';
+                                        case _: 'Unknown<${counter++}> : $v';
+                                    }
+                                case EFunction(_, f):  extractFunction(counter, f);
+                                case _: 'Unknown<${counter++}> : $value';
+                            }
+                        case EBlock(_): 'Block : {}';
+                        case EObjectDecl(_): 'Dynamic : {}';
+                        case EConst(CFloat(v)): 'Float : $v';
+                        case EConst(CInt(v)): 'Int : $v';
+                        case EConst(CString(v)): 'String : $v';
+                        case EConst(CRegexp(r, opt)): 'Regexp : ~/$r/$opt';
+                        case EConst(CIdent(v)): 
+                            switch(v) {
+                                case \"true\", \"false\": 'Bool : $v';
+                                case \"null\": 'Null : $v';
+                                case _: 'Unknown<${counter++}> : $v';
+                            }
+                        case EFunction(_, f): extractFunction(counter, f);
+                        case _: 'Unknown<${counter++}> : $value';
+                    }
+                }
+            }
+        ");
         return sb.toString();
     }
 }

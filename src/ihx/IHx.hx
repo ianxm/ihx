@@ -18,7 +18,7 @@
 
 package ihx;
 
-import neko.io.FileInput;
+import sys.io.FileInput;
 import neko.Lib;
 import sys.FileSystem;
 import ihx.CmdProcessor;
