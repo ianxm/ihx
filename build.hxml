@@ -6,5 +6,7 @@
 # --next
 
 -main ihx.IHx
--neko ../bin/ihx.n
--cmd nekotools boot ../bin/ihx.n
+-neko bin/ihx.n
+-cp src
+-cmd nekotools boot bin/ihx.n
+-cmd cp bin/ihx.n run.n
