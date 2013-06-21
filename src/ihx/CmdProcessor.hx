@@ -150,8 +150,8 @@ class CmdProcessor
         if( ! FileSystem.exists(name) )
             return "path not found: " + name;
         var path = FileSystem.fullPath(name);
-        var count = nekoEval.classpath.remove( function(ii) return ii==path );
-        return if( count > 0 )
+        var removed = nekoEval.classpath.remove( path );
+        return if( removed )
             "removed: " + path;
         else
             "path not found: " + path;
@@ -175,7 +175,7 @@ class CmdProcessor
         var name = cmdStr.split(" ")[1];
         if( name==null || name.length==0 )
             return "syntax error";
-        nekoEval.libs.push(name);
+        nekoEval.libs.add(name);
         return "added: " + name;
     }
 
@@ -187,8 +187,7 @@ class CmdProcessor
         var name = cmdStr.split(" ")[1];
         if( name == null || name.length==0 )
             return "syntax error";
-        var index = nekoEval.libs.indexOf(name);
-        if (index >= 0) nekoEval.libs.splice(0, index);
+        nekoEval.libs.remove(name);
         return "removed: " + name;
     }
 
