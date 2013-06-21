@@ -57,21 +57,37 @@ class IHx
     **/
     public function run()
     {
-        if( Sys.args().length > 0 )
+        var debug = false;
+        var paths:Set<String> = [];
+        var libs:Set<String> = [];
+        var defines:Set<String> = [];
+        
+        var args = Sys.args();
+        while( args.length > 0 )
         {
-            var cwd = Sys.args()[0];
-            if( !FileSystem.exists(cwd) )
-            {
-                Lib.println("usage: neko ihx [workingdir]");
-                Sys.exit(1);
+            var arg = args.shift();
+            switch ( arg ) {
+                case "-debug":
+                    debug = true;
+                case "-cp":
+                    paths.add(args.shift());
+                case "-lib":
+                    libs.add(args.shift());
+                case "-D":
+                    defines.add(args.shift());
+                case cwd if (FileSystem.exists(cwd)):
+                    Sys.setCwd(cwd);
+                case _:
+                    Lib.println('Unknown argument "$arg"');
+                    Lib.println("Usage: neko ihx [-debug] [-cp /class/path/] [-lib ihx:0.3.0] [-D some_define] [workingdir]");
+                    Sys.exit(1);
             }
-            Sys.setCwd(cwd);
         }
 
         Lib.println("haxe interactive shell v" + VERSION);
         Lib.println("type \"help\" for help");
 
-        var processor = new CmdProcessor();
+        var processor = new CmdProcessor(debug,paths,libs,defines);
 
         while( true )
         {

@@ -29,8 +29,10 @@ import ihx.Set;
 
 class NekoEval
 {
+    public var debug :Bool;
     public var classpath(default,null) :Set<String>;
     public var libs(default,null) :Set<String>;
+    public var defines(default,null) :Set<String>;
     public var tmpSuffix(default,null) :String;
     private var errRegex :EReg;
     private var tmpDir :String;
@@ -40,8 +42,10 @@ class NekoEval
 
     public function new()
     {
+        debug = false;
         classpath = [];
         libs = [];
+        defines = [];
         errRegex = ~/.*IhxProgram_[0-9]*.hx:.* characters [0-9\-]+ : (.*)/;
         tmpDir = (Sys.systemName()=="Windows") ? Sys.getEnv("TEMP") : "/tmp";
         tmpSuffix = StringTools.lpad(Std.string(Std.random(9999)), "0", 4);
@@ -56,8 +60,22 @@ class NekoEval
         File.saveContent(tmpHxPath, progStr);
         var args = ["-neko", tmpNekoPath, "-cp", tmpDir, "-main", tmpHxFname, "-cmd", "neko "+tmpNekoPath];
         
-        for(i in libs) args.push('-lib $i');
-        for(i in classpath) args.push('-cp $i');
+        if(debug) args.push('-debug');
+        for(i in libs) 
+        {
+            args.push('-lib');
+            args.push(i); 
+        }
+        for(i in classpath) 
+        {
+            args.push('-cp');
+            args.push(i); 
+        }
+        for(i in defines) 
+        {
+            args.push('-D');
+            args.push(i); 
+        }
         
         var proc = new Process("haxe", args);
         var sb = new StringBuf();
