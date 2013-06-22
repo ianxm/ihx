@@ -135,11 +135,14 @@ class Program
     /**
        get the program as a string
      */
-    public function getProgram()
+    public function getProgram( ?includeHelpers=true )
     {
         var sb = new StringBuf();
 
-        sb.add("import haxe.macro.Expr;\n"); 
+        if( includeHelpers ) {
+            sb.add("import haxe.macro.Expr;\n"); 
+            sb.add("import haxe.macro.Context;\n"); 
+        }
         sb.add("import neko.Lib;\n");                       // imports
         for( ii in imports )
             sb.add(ii.toString() +"\n");
@@ -169,7 +172,7 @@ class Program
         sb.add("    }\n");
         sb.add("}\n");
 
-        sb.add("
+        if( includeHelpers ) sb.add("
             private class IhxASTFormatter {
 
                 public static function __AST_Output_Formatter(dyn:Expr, value:Dynamic) : String {

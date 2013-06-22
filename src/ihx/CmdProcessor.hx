@@ -303,7 +303,7 @@ class CmdProcessor
     **/
     private function printProgram() :String
     {
-        return program.getProgram();
+        return program.getProgram( false );
     }
 
     private function wordWrap(str :String) :String
