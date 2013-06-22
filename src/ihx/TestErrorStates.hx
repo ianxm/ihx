@@ -36,6 +36,6 @@ class TestErrorStates extends haxe.unit.TestCase
         }
 
         var ret = proc.process("2");
-        assertEquals('2', ret);
+        assertEquals('Int : 2', ret);
     }
 }

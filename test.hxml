@@ -1,0 +1,6 @@
+-cp src/
+-main ihx.TestSuite
+-neko bin/tests.n
+#-lib hxSet
+-resource src/ihx/IhxASTFormatter.hx@formatterclass
+-cmd neko bin/tests.n

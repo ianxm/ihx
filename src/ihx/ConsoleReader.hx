@@ -26,6 +26,8 @@ typedef CodeSet = {
     var down      :Int;
     var right     :Int;
     var left      :Int;
+    var home      :Int;
+    var end       :Int;
     var backspace :Int;
     var ctrlc     :Int;
     var enter     :Int;
@@ -59,11 +61,11 @@ class ConsoleReader
         cmd = new PartialCommand();
         history = new History();
         if( std.Sys.systemName() == "Windows" )
-            codeSet = {arrow: 224, up: 72, down: 80, right: 77, left: 75, 
+            codeSet = {arrow: 224, up: 72, down: 80, right: 77, left: 75, home: -1, end: -1,
                        backspace: 8, ctrlc: 3, enter: 13,
                        ctrla: 1, ctrle: 5, ctrlb: 2, ctrlf: 6, ctrld: 4 };
         else
-            codeSet = {arrow: 27, up: 65, down: 66, right: 67, left: 68,
+            codeSet = {arrow: 27, up: 65, down: 66, right: 67, left: 68, home: 72, end: 70,
                        backspace: 127, ctrlc: 3, enter: 13,
                        ctrla: 1, ctrle: 5, ctrlb: 2, ctrlf: 6, ctrld: 4 };
     }
@@ -87,14 +89,28 @@ class ConsoleReader
                 case _ if(code == codeSet.down):  { clear(cmd); cmd.set(history.next()); }
                 case _ if(code == codeSet.right): cmd.cursorForward();
                 case _ if(code == codeSet.left):  cmd.cursorBack();
+                case _ if(code == codeSet.home):  cmd.home();
+                case _ if(code == codeSet.end):   cmd.end();
                 }
             }
             else
             {
                 switch( code )
                 {
-                case _ if(code == codeSet.ctrlc): { Lib.println(""); std.Sys.exit(1); }
-                case _ if(code == codeSet.enter): { Lib.println(""); history.add(cmd.toString()); return cmd.toString(); }
+                case _ if(code == codeSet.ctrlc): 
+                    if( cmd.toString().length > 0 )
+                    {
+                        clear(cmd); cmd.set("");
+                    }
+                    else 
+                    {
+                        Lib.println(""); 
+                        std.Sys.exit(1);
+                    }
+                case _ if(code == codeSet.enter): 
+                    Lib.println(""); 
+                    history.add(cmd.toString()); 
+                    return cmd.toString(); 
                 case _ if(code == codeSet.ctrld): cmd.del(); // del shares code with tilde?
                 case _ if(code == codeSet.ctrla): cmd.home();
                 case _ if(code == codeSet.ctrle): cmd.end();

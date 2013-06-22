@@ -20,6 +20,7 @@ package ihx;
 
 using Lambda;
 using StringTools;
+import sys.FileSystem;
 import haxe.ds.StringMap;
 import neko.Lib;
 import ihx.program.Program;
@@ -47,21 +48,39 @@ class CmdProcessor
     /** name of new lib to include in build */
     private var cmdStr :String;
 
-    public function new()
+    public function new( ?useDebug=false, ?paths:Set<String>, ?libs:Set<String>, ?defines:Set<String> )
     {
         nekoEval = new NekoEval();
         program = new Program(nekoEval.tmpSuffix);
         sb = new StringBuf();
         commands = new StringMap<Void->String>();
         commands.set("dir", listVars);
+        commands.set("debug", debug);
+        commands.set("addpath", addPath);
+        commands.set("rmpath", rmPath);
+        commands.set("path", listPath);
         commands.set("addlib", addLib);
         commands.set("rmlib", rmLib);
         commands.set("libs", listLibs);
+        commands.set("adddefine", addDefine);
+        commands.set("rmdefine", rmDefine);
+        commands.set("defines", listDefines);
         commands.set("clear", clearVars);
         commands.set("print", printProgram);
         commands.set("help", printHelp);
         commands.set("exit", function() std.Sys.exit(0));
         commands.set("quit", function() std.Sys.exit(0));
+
+        if( useDebug ) Sys.println(this.debug());
+        if( paths!=null ) for( path in paths ) {
+            Sys.println( doAddPath(path) );
+        }
+        if( libs!=null ) for( lib in libs ) {
+            Sys.println( doAddLib(lib) );
+        }
+        if( defines!=null ) for( def in defines ) {
+            Sys.println( doAddDefine(def) );
+        }
     }
 
     /**
@@ -119,17 +138,89 @@ class CmdProcessor
             return "vars: (none)";
         return wordWrap("vars: "+ vars.join(", "));
     }
+                
+    /**
+       toggle debug compilation mode
+    **/
+    private function debug() :String
+    {
+        nekoEval.debug = !nekoEval.debug;
+        return nekoEval.debug ? "debug mode on" : "debug mode off";
+    }
 
     /**
-       add a haxelib library to the compile command
+       command to add a dir to the classpath in the compile command
+    **/
+    private function addPath() :String
+    {
+        var name = cmdStr.split(" ")[1];
+        if( name==null || name.length==0 )
+            return "syntax error";
+        return doAddPath(name);
+    }
+
+    /**
+       implementation method to check a dir exists and add it to the classpath in the compile command
+    **/
+    private function doAddPath( name:String ) :String
+    {
+        if( ! FileSystem.exists(name) )
+            return "path not found: " + name;
+        var path = FileSystem.fullPath(name);
+        nekoEval.classpath.add(path);
+        return "added path: " + path;
+    }
+
+    /**
+       remove a dir from the classpath in the compile command
+    **/
+    private function rmPath() :String
+    {
+        var name = cmdStr.substr(cmdStr.indexOf(" ")+1);
+        if( name == null || name.length==0 )
+            return "syntax error";
+        if( ! FileSystem.exists(name) )
+            return "path not found: " + name;
+        var path = FileSystem.fullPath(name);
+        var removed = nekoEval.classpath.remove( path );
+        return if( removed )
+            "removed path: " + path;
+        else
+            "path not found: " + path;
+    }
+
+    /**
+       list the dirs in the classpath
+    **/
+    private function listPath() :String
+    {
+        if( nekoEval.classpath.length == 0 )
+            return "path: (empty)";
+        return "path: " + wordWrap(nekoEval.classpath.join(", "));
+    }
+
+    /**
+       command to add a haxelib library to the compile command
     **/
     private function addLib() :String
     {
         var name = cmdStr.split(" ")[1];
         if( name==null || name.length==0 )
             return "syntax error";
-        nekoEval.libs.push(name);
-        return "added: " + name;
+        return doAddLib(name);
+    }
+
+    /**
+       implementation method to check the library exists and then add it to the compile command. 
+    **/
+    private function doAddLib( name:String ) :String
+    {
+        // Check that the library exists
+        var haxelibName = name.split(":")[0];
+        if( 0 != new sys.io.Process("haxelib", ["path",haxelibName]).exitCode() ) 
+            return 'haxelib `$haxelibName` could not be loaded';
+        nekoEval.libs.add(name);
+        return "added lib: " + name;
     }
 
     /**
@@ -140,9 +231,8 @@ class CmdProcessor
         var name = cmdStr.split(" ")[1];
         if( name == null || name.length==0 )
             return "syntax error";
-        var index = nekoEval.libs.indexOf(name);
-        if (index >= 0) nekoEval.libs.splice(0, index);
-        return "removed: " + name;
+        nekoEval.libs.remove(name);
+        return "removed lib: " + name;
     }
 
     /**
@@ -152,7 +242,51 @@ class CmdProcessor
     {
         if( nekoEval.libs.length == 0 )
             return "libs: (none)";
-        return "libs: " + wordWrap(Lambda.list(nekoEval.libs).join(", "));
+        return "libs: " + wordWrap(nekoEval.libs.join(", "));
+    }
+
+
+    /**
+       command to add a -D define to the compile command
+    **/
+    private function addDefine() :String
+    {
+        var name = cmdStr.split(" ")[1];
+        if( name==null || name.length==0 )
+            return "syntax error";
+        return doAddDefine(name);
+    }
+
+
+    /**
+       implementation method to add a -D define to the compile command
+    **/
+    private function doAddDefine( name:String ) :String
+    {
+        nekoEval.defines.add(name);
+        return "added define: " + name;
+    }
+
+    /**
+       remove a -D define from the compile command
+    **/
+    private function rmDefine() :String
+    {
+        var name = cmdStr.split(" ")[1];
+        if( name == null || name.length==0 )
+            return "syntax error";
+        nekoEval.defines.remove(name);
+        return "removed define: " + name;
+    }
+
+    /**
+       list -D defines
+    **/
+    private function listDefines() :String
+    {
+        if( nekoEval.defines.length == 0 )
+            return "defines: (none)";
+        return "defines: " + wordWrap(nekoEval.defines.join(", "));
     }
 
     /**
@@ -169,7 +303,15 @@ class CmdProcessor
     **/
     private function printProgram() :String
     {
-        return program.getProgram();
+        var lines = program.getProgram(false).split("\n");
+        var linesWithNumbers = [];
+        var lineNumber = 0;
+        for( l in lines ) 
+        {
+            lineNumber++;
+            linesWithNumbers.push(Std.string(lineNumber).lpad(" ",4) + ": " + l);
+        }
+        return linesWithNumbers.join("\n");
     }
 
     private function wordWrap(str :String) :String
@@ -200,17 +342,24 @@ class CmdProcessor
         return sb.toString();
     }
 
-    private function printHelp() :String
+    public static function printHelp() :String
     {
         return "ihx shell commands:\n"
-            + "  dir            list all currently defined variables\n"
-            + "  addlib [name]  add a haxelib library to the search path\n"
-            + "  rmlib  [name]  remove a haxelib library from the search path\n"
-            + "  libs           list haxelib libraries that have been added\n"
-            + "  clear          delete all variables from the current session\n"
-            + "  print          dump the temp neko program to the console\n"
-            + "  help           print this message\n"
-            + "  exit           close this session\n"
-            + "  quit           close this session";
+            + "  dir              list all currently defined variables\n"
+            + "  addpath [name]   add a dir to the classpath\n"
+            + "  rmpath  [name]   remove a dir from the classpath\n"
+            + "  path             list the dirs in the classpath\n"
+            + "  addlib [name]    add a haxelib library to the search path\n"
+            + "  rmlib  [name]    remove a haxelib library from the search path\n"
+            + "  libs             list haxelib libraries that have been added\n"
+            + "  adddefine [name] add a '-D' define to the compilation \n"
+            + "  rmdefine  [name] remove a '-D' define from the compilation \n"
+            + "  defines          list all the '-D' defines that have been added\n"
+            + "  debug            toggle haxe -debug mode\n"
+            + "  clear            delete all variables from the current session\n"
+            + "  print            dump the temp neko program to the console\n"
+            + "  help             print this message\n"
+            + "  exit             close this session\n"
+            + "  quit             close this session";
     }
 }

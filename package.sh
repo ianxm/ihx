@@ -1,23 +1,8 @@
-#!/bin/bash
+#!/bin/sh
 
-if [ -e "ihx" ];
-then
-    rm -Rf dist
-    mkdir dist
-fi
+haxe build.hxml
 
-cp -Rupv src/ihx dist
-cp README.md dist
-cp doc/LICENSE dist
-cp doc/haxelib.xml dist
-cp bin/ihx.n dist/run.n
-
-if [ -e "ihx.zip" ];
-then
-    rm ihx.zip
-fi
-cd dist
-zip -r ../ihx.zip *
-cd ..
-
-rm -Rf dist
+libname='ihx'
+rm -f "${libname}.zip"
+zip -r "${libname}.zip" haxelib.json haxelib.xml run.n src LICENSE gpl-3.0.txt README.md
+echo "Saved as ${libname}.zip"

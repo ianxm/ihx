@@ -104,6 +104,9 @@ usage
 the ihx shell accepts the following commands:
 
 - `dir`            list all currently defined variables
+- `addpath [name]` add a dir to the classpath
+- `rmpath  [name]` remove a dir from the classpath
+- `path`           list the dirs in the classpath
 - `addlib [name]`  add a haxelib library to the search path
 - `rmlib  [name]`  remove a haxelib library from the search path
 - `libs`           list haxelib libraries that have been added
@@ -130,7 +133,7 @@ example
 
 the following is an example of an ihx session:
 
-    haxe interactive shell v0.2.1
+    haxe interactive shell v0.2.2
     type "help" for help
     >> var a=1
     1
