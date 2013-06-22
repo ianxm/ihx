@@ -22,6 +22,32 @@ import ihx.CmdProcessor;
 
 class TestBuiltins extends haxe.unit.TestCase
 {
+    public function testImport()
+    {
+        var proc = new CmdProcessor();
+        var ret = proc.process("import haxe.crypto.Md5");
+        ret = proc.process("Md5.encode('hello')");
+        assertEquals("String : 5d41402abc4b2a76b9719d911017c592", ret);
+    }
+
+    public function testWildcardImport()
+    {
+        var proc = new CmdProcessor();
+        var ret = proc.process("import haxe.ds.*");
+        ret = proc.process("new IntMap<String>()");
+        assertEquals("haxe.ds.IntMap<String> : {}", ret);
+        ret = proc.process("new StringMap<String>()");
+        assertEquals("haxe.ds.StringMap<String> : {}", ret);
+    }
+
+    public function testImportStatic()
+    {
+        var proc = new CmdProcessor();
+        var ret = proc.process("import haxe.crypto.Md5.*");
+        ret = proc.process("encode('hello')");
+        assertEquals("String : 5d41402abc4b2a76b9719d911017c592", ret);
+    }
+
     public function testArray()
     {
         var proc = new CmdProcessor();
@@ -34,6 +60,15 @@ class TestBuiltins extends haxe.unit.TestCase
         ret = proc.process("a.sort(Reflect.compare);");
         ret = proc.process("a");
         assertEquals("Array<Int> : [1,2,3]", ret);
+    }
+
+    public function testArrayComprehension()
+    {
+        var proc = new CmdProcessor();
+        var ret = proc.process("var a=[ for(i in 0...10) if (i%2 == 0) i ]");
+        assertEquals("Array<Int> : [0,2,4,6,8]", ret);
+        ret = proc.process("a.length");
+        assertEquals("Int : 5", ret);
     }
 
     public function testDate()
@@ -100,11 +135,42 @@ class TestBuiltins extends haxe.unit.TestCase
         assertEquals("String : 7", ret);
     }
 
+    public function testMap()
+    {
+        var proc = new CmdProcessor();
+        var ret = proc.process("var a=new Map<String,Int>()");
+        assertEquals("Map<String, Int> : {}", ret);
+
+        ret = proc.process("a.set('one', 1);");
+        ret = proc.process("a");
+        assertEquals("Map<String, Int> : {one => 1}", ret);
+
+        ret = proc.process("a.set('two', 2);");
+        ret = proc.process("a");
+        assertEquals("Map<String, Int> : {one => 1, two => 2}", ret);
+
+        ret = proc.process("a.exists('one')");
+        assertEquals("Bool : true", ret);
+
+        ret = proc.process("a.get('two')");
+        assertEquals("Null<Int> : 2", ret);
+    }
+
+    public function testMapSyntaxSugar()
+    {
+        var proc = new CmdProcessor();
+        var ret = proc.process("var a=[ 'one'=>1, 'two'=>2 ]");
+        assertEquals("Map<String, Int> : {one => 1, two => 2}", ret);
+
+        ret = proc.process("a['two']");
+        assertEquals("Null<Int> : 2", ret);
+    }
+
     public function testStringMap()
     {
         var proc = new CmdProcessor();
         var ret = proc.process("import haxe.ds.StringMap");
-        var ret = proc.process("var a=new StringMap()");
+        ret = proc.process("var a=new StringMap()");
         assertEquals("Unknown<0> : {}", ret);
 
         ret = proc.process("a.set('one', 1);");
