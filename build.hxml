@@ -8,5 +8,6 @@
 -main ihx.IHx
 -neko bin/ihx.n
 -cp src
+-resource src/ihx/IhxASTFormatter.hx@formatterclass
 -cmd nekotools boot bin/ihx.n
 -cmd cp bin/ihx.n run.n
