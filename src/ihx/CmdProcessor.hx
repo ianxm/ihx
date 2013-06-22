@@ -303,7 +303,15 @@ class CmdProcessor
     **/
     private function printProgram() :String
     {
-        return program.getProgram( false );
+        var lines = program.getProgram(false).split("\n");
+        var linesWithNumbers = [];
+        var lineNumber = 0;
+        for( l in lines ) 
+        {
+            lineNumber++;
+            linesWithNumbers.push(Std.string(lineNumber).lpad(" ",4) + ": " + l);
+        }
+        return linesWithNumbers.join("\n");
     }
 
     private function wordWrap(str :String) :String
