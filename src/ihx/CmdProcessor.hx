@@ -342,7 +342,7 @@ class CmdProcessor
         return sb.toString();
     }
 
-    private function printHelp() :String
+    public static function printHelp() :String
     {
         return "ihx shell commands:\n"
             + "  dir              list all currently defined variables\n"

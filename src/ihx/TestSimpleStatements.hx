@@ -26,7 +26,7 @@ class TestSimpleStatements extends haxe.unit.TestCase
     {
         var proc = new CmdProcessor();
         var ret = proc.process("var a=1");
-        assertEquals("1", ret);
+        assertEquals("Int : 1", ret);
     }
 
     public function testSuppressedOutput()
@@ -35,7 +35,7 @@ class TestSimpleStatements extends haxe.unit.TestCase
         var ret = proc.process("var a=1;");
         assertEquals("", ret);
         ret = proc.process("a");
-        assertEquals("1", ret);
+        assertEquals("Int : 1", ret);
     }
 
     public function testCompute()
@@ -44,33 +44,33 @@ class TestSimpleStatements extends haxe.unit.TestCase
         var ret = proc.process("var a=1;");
         ret = proc.process("var b=2;");
         ret = proc.process("var c=a+b");
-        assertEquals("3", ret);
+        assertEquals("Int : 3", ret);
     }
 
     public function testString()
     {
         var proc = new CmdProcessor();
         var ret = proc.process("var a='one'");
-        assertEquals("one", ret);
+        assertEquals("String : one", ret);
     }
 
     public function testVariablePersistence()
     {
         var proc = new CmdProcessor();
         var ret = proc.process("var a='one'");
-        assertEquals("one", ret);
+        assertEquals("String : one", ret);
         ret = proc.process("var b='two'");
-        assertEquals("two", ret);
+        assertEquals("String : two", ret);
         ret = proc.process("var c=a+' '+b");
-        assertEquals("one two", ret);
+        assertEquals("String : one two", ret);
     }
 
     public function testFunction()
     {
         var proc = new CmdProcessor();
         var ret = proc.process("var f=function(ii) { return ii*2; }");
-        assertEquals("#function:1", ret);
+        assertEquals("Int -> Int : #function:1", ret);
         ret = proc.process("f(4)");
-        assertEquals("8", ret);
+        assertEquals("Int : 8", ret);
     }
 }

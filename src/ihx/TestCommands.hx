@@ -26,9 +26,9 @@ class TestCommands extends haxe.unit.TestCase
     {
         var proc = new CmdProcessor();
         var ret = proc.process("var a='one'");
-        assertEquals("one", ret);
+        assertEquals("String : one", ret);
         ret = proc.process("var b='two'");
-        assertEquals("two", ret);
+        assertEquals("String : two", ret);
         ret = proc.process("dir");
         assertEquals("vars: a, b", ret);
     }
@@ -37,16 +37,7 @@ class TestCommands extends haxe.unit.TestCase
     {
         var proc = new CmdProcessor();
         var ret = proc.process("help");
-        var ans = 'ihx shell commands:
-  dir            list all currently defined variables
-  addlib [name]  add a haxelib library to the search path
-  rmlib  [name]  remove a haxelib library from the search path
-  libs           list haxelib libraries that have been added
-  clear          delete all variables from the current session
-  print          dump the temp neko program to the console
-  help           print this message
-  exit           close this session
-  quit           close this session';
+        var ans = CmdProcessor.printHelp();
         assertEquals(ans, ret);
     }
 
@@ -54,9 +45,9 @@ class TestCommands extends haxe.unit.TestCase
     {
         var proc = new CmdProcessor();
         var ret = proc.process("var a='one'");
-        assertEquals("one", ret);
+        assertEquals("String : one", ret);
         ret = proc.process("var b='two'");
-        assertEquals("two", ret);
+        assertEquals("String : two", ret);
         ret = proc.process("clear");
         ret = proc.process("dir");
         assertEquals('vars: (none)', ret);
@@ -68,11 +59,11 @@ class TestCommands extends haxe.unit.TestCase
         var ret = proc.process("libs");
         assertEquals("libs: (none)", ret);
 
-        ret = proc.process("addlib hxSet");
+        ret = proc.process("addlib ihx");
         ret = proc.process("libs");
-        assertEquals("libs: hxSet", ret);
+        assertEquals("libs: ihx", ret);
 
-        ret = proc.process("rmlib hxSet");
+        ret = proc.process("rmlib ihx");
         ret = proc.process("libs");
         assertEquals("libs: (none)", ret);
     }
