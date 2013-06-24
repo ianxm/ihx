@@ -143,6 +143,7 @@ class Program
             sb.add("import haxe.macro.Expr;\n"); 
             sb.add("import haxe.macro.Context;\n"); 
         }
+        sb.add("#if !macro \n");                            // separate macro code from runtime code to avoid "You cannot use @:build inside a macro" error
         sb.add("import neko.Lib;\n");                       // imports
         for( ii in imports )
             sb.add(ii.toString() +"\n");
@@ -171,6 +172,7 @@ class Program
 
         sb.add("    }\n");
         sb.add("}\n");
+        sb.add("#end \n");                            // separate macro code from runtime code to avoid "You cannot use @:build inside a macro" error
 
         if( includeHelpers ) sb.add(haxe.Resource.getString("formatterclass"));
         return sb.toString();

@@ -61,9 +61,10 @@ class TestCommands extends haxe.unit.TestCase
         assertEquals("Compilation:", ret.split("\n")[0] );
         assertEquals("  haxe -neko ", ret.split("\n")[1].substr(0,13) );
         assertEquals("Program:", ret.split("\n")[2] );
-        assertEquals("   1: import neko.Lib;", ret.split("\n")[3] );
-        assertEquals("   6:         var a;", ret.split("\n")[8] );
-        assertEquals("   8:         a = 0;", ret.split("\n")[10] );
+        assertEquals("   1: #if !macro ", ret.split("\n")[3] );
+        assertEquals("   2: import neko.Lib;", ret.split("\n")[4] );
+        assertEquals("   7:         var a;", ret.split("\n")[9] );
+        assertEquals("   9:         a = 0;", ret.split("\n")[11] );
     }
 
     public function testLibs()
