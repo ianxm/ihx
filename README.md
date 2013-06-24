@@ -72,21 +72,21 @@ situations it is possible to change a variable's type by redeclaring
 it.  for example, this will work:
 
     >> var a = 1
-    1
+    Int : 1
 
     >> a = 1.2
     error: Float should be Int
 
     >> var a :Float = 1.2
-    1.2
+    Float : 1.2
 
 but this won't work:
 
     >> var a = 1
-    1
+    Int : 1
 
     >> a = "car"
-    error: Float should be Int
+    error: String should be Int
 
     >> var a :String = "car"
     error: Int should be String
@@ -103,18 +103,22 @@ usage
 
 the ihx shell accepts the following commands:
 
-- `dir`            list all currently defined variables
-- `addpath [name]` add a dir to the classpath
-- `rmpath  [name]` remove a dir from the classpath
-- `path`           list the dirs in the classpath
-- `addlib [name]`  add a haxelib library to the search path
-- `rmlib  [name]`  remove a haxelib library from the search path
-- `libs`           list haxelib libraries that have been added
-- `clear`          delete all variables from the current session
-- `print`          dump the temp neko program to the console
-- `help`           print this message
-- `exit`           close this session
-- `quit`           close this session
+- `dir`               list all currently defined variables
+- `addpath [name]`    add a dir to the classpath
+- `rmpath  [name]`    remove a dir from the classpath
+- `path`              list the dirs in the classpath
+- `addlib [name]`     add a haxelib library to the search path
+- `rmlib  [name]`     remove a haxelib library from the search path
+- `libs`              list haxelib libraries that have been added
+- `adddefine [name]`  add a define (same as "-D name")
+- `rmdefine  [name]`  remove a define
+- `defines`           list defines that have been added
+- `debug`             toggle haxe debug mode
+- `clear`             delete all variables from the current session
+- `print`             dump the temp neko program to the console
+- `help`              print this message
+- `exit`              close this session
+- `quit`              close this session
 
 the above commands will be processed by ihx, all other input will be
 passed to the haxe compiler.  if output is not suppressed with a
@@ -133,63 +137,63 @@ example
 
 the following is an example of an ihx session:
 
-    haxe interactive shell v0.2.2
+    haxe interactive shell v0.3.0
     type "help" for help
     >> var a=1
-    1
+    Int : 1
 
     >> var b = 2;                       <-- suppress output with trailing semicolon
 
     >> var c=a+b
-    3
+    Int : 3
 
     >> Math.sin(c)
-    0.1411200081
+    Float : 0.1411200081
 
     >> var str = 'this is a string'
-    this is a string
+    String : this is a string
 
     >> var str2='multi-line\nstring'
-    multi-line
+    String : multi-line
     string
 
     >> var str3='multi-line ' \         <-- line continuation with '\'
     .. + 'command'
-    multi-line command
+    String : multi-line command
 
     >> dir                              <-- get list of variables in the session
     vars: a, b, c, str, str2, str3
 
     >> var arr = [1,4,2,5,1]
-    [1,4,2,5,1]
+    Array<Int> : [1,4,2,5,1]
 
     >> arr.sort(Reflect.compare)
-    null                                <-- sort's return type is void
+    Void : null                                <-- sort's return type is void
 
     >> arr
-    [1,1,2,4,5]
+    Array<Int> : [1,1,2,4,5]
 
     >> var timestwo = function(ii) { return ii*2; }
-    #function:1
+    Int -> Int : #function:1
 
     >> using Lambda;                    <-- 'using' and 'import' work as expected
 
     >> arr.map(timestwo)
-    {2, 2, 4, 8, 10}
+    Array<Int> : [2,2,4,8,10]
 
     >> var nameRe = ~/name: ([a-z]+)/;
 
-    >> var nameRe.match("name: charlie")
-    true
+    >> nameRe.match("name: charlie")
+    Bool : true
 
     >> nameRe.matched(1)
-    charlie
+    String : charlie
 
     >> var d = { one: 1, two: "two" }   <-- anonymous objects work as expected
-    { one => 1, two => two }
+    { var two : String; var one : Int; } : { one => 1, two => two }
 
     >> haxe.Json.stringify(d)           <-- standard library call without import
-    {"one":1,"two","two"}
+    String : {"one":1,"two":"two"}
 
     >> enum Color {\                    <-- enums and typedefs work as expected
     .. RED;\
@@ -199,22 +203,17 @@ the following is an example of an ihx session:
     >> typedef Car = { color:Color, name:String }
 
     >> var car = { color: RED, name: "gus" }
-    { name => gus, color => RED }
+    { var name : String; var color : IhxProgram_1515.Color; } : { name => gus, color => RED }
 
-    >> addlib hxSet                     <-- add a haxelib library to the session
-    added: hxSet
+    >> addlib random                     <-- add a haxelib library to the session
+    added: random
 
     >> libs                             <-- list haxelib libraries that have been added
-    libs: hxSet
+    libs: random
 
-    >> var s = new Set<Int>();
+    >> var s = Random.int(0,100);
+    Int : 48
 
-    >> s.union([1,2,3,2,1,5,4,1])
-    5
-
-    >> s.list()
-    {4, 5, 3, 2, 1}
-
-    >> quit
+    >> quit                              <-- you can also use Ctrl-C (once to clear the line, again to exit)
 
 
