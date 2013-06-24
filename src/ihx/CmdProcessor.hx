@@ -303,15 +303,18 @@ class CmdProcessor
     **/
     private function printProgram() :String
     {
+        var sb = new StringBuf();
+        sb.add("Compilation:\n");
+        sb.add("  haxe " + nekoEval.getArgs().join(" ") + "\n");
+        sb.add("Program:\n");
+
         var lines = program.getProgram(false).split("\n");
-        var linesWithNumbers = [];
         var lineNumber = 0;
         for( l in lines ) 
         {
-            lineNumber++;
-            linesWithNumbers.push(Std.string(lineNumber).lpad(" ",4) + ": " + l);
+            sb.add(Std.string(++lineNumber).lpad(" ",4) + ": " + l + "\n");
         }
-        return linesWithNumbers.join("\n");
+        return sb.toString();
     }
 
     private function wordWrap(str :String) :String

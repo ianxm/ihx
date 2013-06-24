@@ -54,10 +54,8 @@ class NekoEval
         tmpNekoPath = tmpDir +"/ihx_out_"+ tmpSuffix +".n";
     }
 
-    public function evaluate(progStr)
+    public function getArgs()
     {
-        var ret = "";
-        File.saveContent(tmpHxPath, progStr);
         var args = ["-neko", tmpNekoPath, "-cp", tmpDir, "-main", tmpHxFname, "-cmd", "neko "+tmpNekoPath];
         
         if(debug) args.push('-debug');
@@ -76,8 +74,15 @@ class NekoEval
             args.push('-D');
             args.push(i); 
         }
+        return args;
+    }
+
+    public function evaluate(progStr)
+    {
+        var ret = "";
+        File.saveContent(tmpHxPath, progStr);
         
-        var proc = new Process("haxe", args);
+        var proc = new Process("haxe", getArgs());
         var sb = new StringBuf();
         try {
             var pastOld = false;
