@@ -4,37 +4,6 @@ private class IhxASTFormatter {
         
         var counter = 0;
 
-        function pathExtractor(buffer : StringBuf, counter : Int, type : Null<ComplexType>) {
-            if (type == null) buffer.add('Unknown<$counter>');
-            else {
-                switch(type) {
-                    case TPath(p): 
-                        var parts = p.pack;
-                        parts.push(p.name);
-                        buffer.add(parts.join("."));
-                    case _: buffer.add('Unknown<$counter>');
-                }
-            }
-        }
-
-        function extractFunction(f : Function) {
-            var buffer = new StringBuf();
-            if(f.args.length == 0) buffer.add('Void -> ');
-            else {
-                
-                for(arg in f.args) {
-                    pathExtractor(buffer, counter, arg.type);
-                    buffer.add(' -> ');
-                    counter++;
-                }
-            }
-
-            if(f.ret == null) buffer.add('Void');
-            else pathExtractor(buffer, counter, f.ret);
-
-            return buffer.toString();
-        }
-
         function getTypeString(expr : Expr) {
             var type:String = 
                 try { 
