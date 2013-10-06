@@ -1,6 +1,6 @@
 {
   "name": "ihx",
-  "license": "GPL",
+  "license": "LGPL",
   "classPath": "src/",
   "tags": ["neko","shell","interactive","cli","tool","run"],
   "description": "ihx is an interactive haxe scripting shell",

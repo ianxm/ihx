@@ -1,6 +1,0 @@
-<project name="ihx" url="http://github.com/ianxm/ihx" license="GPL">
-    <user name="ianxm"/>
-    <description>ihx is an interactive haxe scripting shell</description>
-    <version name="0.2.2">added path commands</version>
-    <depends name="hxSet"/>
-</project>

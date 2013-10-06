@@ -1,20 +1,18 @@
-/*
-  Copyright (c) 2009-2013, Ian Martins (ianxm@jhu.edu)
-
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2 of the License, or
-  (at your option) any later version.
-
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-*/
+/* ************************************************************************ */
+/*                                                                          */
+/*  Copyright (c) 2009-2013 Ian Martins (ianxm@jhu.edu)                     */
+/*                                                                          */
+/* This library is free software; you can redistribute it and/or            */
+/* modify it under the terms of the GNU Lesser General Public               */
+/* License as published by the Free Software Foundation; either             */
+/* version 3.0 of the License, or (at your option) any later version.       */
+/*                                                                          */
+/* This library is distributed in the hope that it will be useful,          */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty of           */
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU        */
+/* Lesser General Public License or the LICENSE file for more details.      */
+/*                                                                          */
+/* ************************************************************************ */
 
 package ihx;
 
@@ -24,8 +22,8 @@ import sys.FileSystem;
 import ihx.CmdProcessor;
 
 /**
-   IHx is an interactive session for haxe programming.  The code is basically a command line
-   interface for Hscript.
+   ihx is an interactive session for haxe programming.  It builds
+   compiles and runs input as a neko program in the background.
 **/
 class IHx
 {
