@@ -14,6 +14,8 @@
 /*                                                                          */
 /* ************************************************************************ */
 
+package ihx;
+
 /**
    put together a command string from keystrokes
 **/
