@@ -69,7 +69,7 @@ class TestSimpleStatements extends haxe.unit.TestCase
     {
         var proc = new CmdProcessor();
         var ret = proc.process("var f=function(ii) { return ii*2; }");
-        assertEquals("Int -> Int : #function:1", ret);
+        assertEquals("Int->Int : #function:1", ret);
         ret = proc.process("f(4)");
         assertEquals("Int : 8", ret);
     }
