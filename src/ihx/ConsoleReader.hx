@@ -61,7 +61,7 @@ class ConsoleReader
         if( std.Sys.systemName() == "Windows" )
             codeSet = {arrow: 224, up: 72, down: 80, right: 77, left: 75, home: -1, end: -1,
                        backspace: 8, ctrlc: 3, enter: 13,
-                       ctrla: 1, ctrle: 5, ctrlb: 2, ctrlf: 6, ctrld: 4 };
+                       ctrla: 1, ctrle: 5, ctrlb: 2, ctrlf: 6, ctrld: 83 };
         else
             codeSet = {arrow: 27, up: 65, down: 66, right: 67, left: 68, home: 72, end: 70,
                        backspace: 127, ctrlc: 3, enter: 13,
@@ -88,7 +88,8 @@ class ConsoleReader
                 case _ if(code == codeSet.right): cmd.cursorForward();
                 case _ if(code == codeSet.left):  cmd.cursorBack();
                 case _ if(code == codeSet.home):  cmd.home();
-                case _ if(code == codeSet.end):   cmd.end();
+                case _ if (code == codeSet.end):   cmd.end();
+				case _ if (code == codeSet.ctrld && std.Sys.systemName() == "Windows"): cmd.del();
                 }
             }
             else
