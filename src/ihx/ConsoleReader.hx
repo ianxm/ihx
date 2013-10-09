@@ -59,7 +59,7 @@ class ConsoleReader
         cmd = new PartialCommand();
         history = new History();
         if( std.Sys.systemName() == "Windows" )
-            codeSet = {arrow: 224, up: 72, down: 80, right: 77, left: 75, home: -1, end: -1,
+            codeSet = {arrow: 224, up: 72, down: 80, right: 77, left: 75, home: 71, end: 79,
                        backspace: 8, ctrlc: 3, enter: 13,
                        ctrla: 1, ctrle: 5, ctrlb: 2, ctrlf: 6, ctrld: 83 };
         else
