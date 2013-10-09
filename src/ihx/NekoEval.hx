@@ -87,14 +87,14 @@ class NekoEval
             while( true )
             {
                 var line = proc.stdout.readLine();
-                if( !pastOld && line==Program.separator )
+                if( !pastOld && StringTools.trim(line)==Program.separator )
                 {
                     pastOld = true;
                     continue;
                 }
                 if( pastOld )
                     sb.add(line+"\n");
-                ret = sb.toString().substr(0, sb.toString().length-1);
+                ret = sb.toString().substr(0, sb.toString().length - 1);
             }
         }
         catch ( eof :Eof ) { }

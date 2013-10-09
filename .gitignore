@@ -1,2 +1,4 @@
 bin
 *.zip
+/*.bat
+/*.hxproj
