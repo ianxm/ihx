@@ -94,14 +94,14 @@ class TestCommands extends haxe.unit.TestCase
         ret = proc.process("path");
         assertEquals("path: (empty)", ret);
 
-        ret = proc.process("addpath src/");
-        ret = proc.process("addpath bin/");
+        ret = proc.process("addpath src");
+        ret = proc.process("addpath bin");
         ret = proc.process("path");
-        var srcFullPath = sys.FileSystem.fullPath("src/");
-        var binFullPath = sys.FileSystem.fullPath("bin/");
+        var srcFullPath = sys.FileSystem.fullPath("src");
+        var binFullPath = sys.FileSystem.fullPath("bin");
         assertEquals('path: $srcFullPath, $binFullPath', ret);
 
-        ret = proc.process("rmpath bin/");
+        ret = proc.process("rmpath bin");
         ret = proc.process("path");
         assertEquals('path: $srcFullPath', ret);
     }
@@ -145,10 +145,10 @@ class TestCommands extends haxe.unit.TestCase
 
     public function testInitialization()
     {
-        var srcFullPath = sys.FileSystem.fullPath("src/");
-        var binFullPath = sys.FileSystem.fullPath("bin/");
+        var srcFullPath = sys.FileSystem.fullPath("src");
+        var binFullPath = sys.FileSystem.fullPath("bin");
 
-        var proc = new CmdProcessor( true, ["src/","bin/"], ["ihx"], ["ABC","DEF"] );
+        var proc = new CmdProcessor( true, ["src","bin"], ["ihx"], ["ABC","DEF"] );
         var ret = proc.process("path");
         assertEquals('path: $srcFullPath, $binFullPath', ret);
         ret = proc.process("libs");

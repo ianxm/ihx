@@ -87,7 +87,8 @@ class NekoEval
             while( true )
             {
                 var line = proc.stdout.readLine();
-                if( !pastOld && StringTools.trim(line)==Program.separator )
+				if (Sys.systemName() == "Windows") line = line.substring(0, line.length - 1);
+                if( !pastOld && line==Program.separator )
                 {
                     pastOld = true;
                     continue;
@@ -102,6 +103,7 @@ class NekoEval
             while( true )
             {
                 var line = proc.stderr.readLine();
+				if (Sys.systemName() == "Windows") line = line.substring(0, line.length - 1);
                 if( errRegex.match(line) )
                     sb.add("error: "+ errRegex.matched(1) +"\n");
                 else
