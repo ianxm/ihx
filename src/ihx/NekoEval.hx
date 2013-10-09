@@ -82,11 +82,13 @@ class NekoEval
         
         var proc = new Process("haxe", getArgs());
         var sb = new StringBuf();
+		var isWindows = Sys.systemName() == "Windows";
         try {
             var pastOld = false;
             while( true )
             {
                 var line = proc.stdout.readLine();
+				if (isWindows && line.charCodeAt(line.length-1) == 13) line = line.substring(0, line.length - 1);
                 if( !pastOld && line==Program.separator )
                 {
                     pastOld = true;
@@ -94,7 +96,7 @@ class NekoEval
                 }
                 if( pastOld )
                     sb.add(line+"\n");
-                ret = sb.toString().substr(0, sb.toString().length-1);
+                ret = sb.toString().substr(0, sb.toString().length - 1);
             }
         }
         catch ( eof :Eof ) { }
@@ -102,6 +104,7 @@ class NekoEval
             while( true )
             {
                 var line = proc.stderr.readLine();
+				if (isWindows && line.charCodeAt(line.length-1) == 13) line = line.substring(0, line.length - 1);
                 if( errRegex.match(line) )
                     sb.add("error: "+ errRegex.matched(1) +"\n");
                 else
