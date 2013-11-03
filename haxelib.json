@@ -5,8 +5,8 @@
   "tags": ["neko","shell","interactive","cli","tool","run"],
   "description": "ihx is an interactive haxe scripting shell",
   "contributors": ["ianxm"],
-  "releasenote": "fixes for windows",
-  "version": "0.3.1",
+  "releasenote": "more fixes for windows from profelis",
+  "version": "0.3.2",
   "url": "http://github.com/ianxm/ihx",
   "dependencies": {
   }
