@@ -137,15 +137,15 @@ class TestBuiltins extends haxe.unit.TestCase
     {
         var proc = new CmdProcessor();
         var ret = proc.process("var a=new Map<String,Int>()");
-        assertEquals("Map<String,Int> : {}", ret);
+        assertEquals("Map<String, Int> : {}", ret);
 
         ret = proc.process("a.set('one', 1);");
         ret = proc.process("a");
-        assertEquals("Map<String,Int> : {one => 1}", ret);
+        assertEquals("Map<String, Int> : {one => 1}", ret);
 
         ret = proc.process("a.set('two', 2);");
         ret = proc.process("a");
-        assertEquals("Map<String,Int> : {one => 1, two => 2}", ret);
+        assertEquals("Map<String, Int> : {one => 1, two => 2}", ret);
 
         ret = proc.process("a.exists('one')");
         assertEquals("Bool : true",ret);
@@ -158,7 +158,7 @@ class TestBuiltins extends haxe.unit.TestCase
     {
         var proc = new CmdProcessor();
         var ret = proc.process("var a=[ 'one'=>1, 'two'=>2 ]");
-        assertEquals("Map<String,Int> : {one => 1, two => 2}", ret);
+        assertEquals("Map<String, Int> : {one => 1, two => 2}", ret);
 
         ret = proc.process("a['two']");
         assertEquals("Null<Int> : 2", ret);
