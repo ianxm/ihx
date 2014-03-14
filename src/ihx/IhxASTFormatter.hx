@@ -1,6 +1,6 @@
 private class IhxASTFormatter {
 
-    public static macro function __AST_Output_Formatter(output : Expr) : Expr {
+    public static macro function format(output : Expr) : Expr {
         
         var counter = 0;
 
