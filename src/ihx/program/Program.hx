@@ -27,8 +27,8 @@ class Program
 
     // TODO should prevent network calls?
 
-    private var defs     :StringMap<Def>;                           // typedef/enum declarations
-    private var vars     :StringMap<Var>;                           // variable declarations
+    private var defs     :StringMap<Def>;                      // typedef/enum declarations
+    private var vars     :StringMap<Var>;                      // variable declarations
     private var imports  :List<Statement>;                     // import statements
     private var commands :List<Statement>;                     // commands
     private var cleanUp  :List<Statement>;                     // close files, etc?
@@ -36,9 +36,9 @@ class Program
     private var tmpFileSuffix :String;                         // unique suffix appended to temp filenames
 
     private static var varRegex        :EReg = ~/var \s*([a-zA-Z][a-zA-Z0-9_]*).*/;
-    private static var varTypeRegex    :EReg = ~/var \s*([a-zA-Z][a-zA-Z0-9_]*)\s*:\s*([a-zA-Z][a-zA-Z0-9<>_\- ]+).*/;
+    private static var varTypeRegex    :EReg = ~/var \s*([a-zA-Z][a-zA-Z0-9_]*)\s*:\s*([a-zA-Z][a-zA-Z0-9<>_\- ,]+).*/;
     private static var varValRegex     :EReg = ~/var \s*([a-zA-Z][a-zA-Z0-9_]*)\s*=\s*(.*)/;
-    private static var varTypeValRegex :EReg = ~/var \s*([a-zA-Z][a-zA-Z0-9_]*)\s*:\s*([a-zA-Z][a-zA-Z0-9<>_\- ]+)\s*=\s*(.*)/;
+    private static var varTypeValRegex :EReg = ~/var \s*([a-zA-Z][a-zA-Z0-9_]*)\s*:\s*([a-zA-Z][a-zA-Z0-9<>_\- ,]+)\s*=\s*(.*)/;
 
     private static var enumRegex    :EReg = ~/enum \s*([a-zA-Z][a-zA-Z0-9_]*)\s*({[^}]+})/;
     private static var typedefRegex :EReg = ~/typedef \s*([a-zA-Z][a-zA-Z0-9_]*)\s*=\s*({[^}]+})/;
@@ -64,23 +64,23 @@ class Program
             defs.set(enumRegex.matched(1), new Def(enumRegex.matched(1), enumRegex.matched(2), "enum"));
         else if( typedefRegex.match(stmt) )
             defs.set(typedefRegex.matched(1), new Def(typedefRegex.matched(1), typedefRegex.matched(2), "typedef"));
-        else if( stmt.startsWith("var ") ) // only allow one var per line, no 'var a,b,c;'
+        else if( stmt.startsWith("var ") )                  // only allow one var per line, no 'var a,b,c;'
         {
-            if( varTypeValRegex.match(stmt) )
+            if( varTypeValRegex.match(stmt) )               // var name :Type = val
             {
                 vars.set(varTypeValRegex.matched(1), new Var(varTypeValRegex.matched(1), varTypeValRegex.matched(2)));
                 commands.add(new Statement(varTypeValRegex.matched(1)+" = "+varTypeValRegex.matched(3)));
             }
-            else if( varTypeRegex.match(stmt) )
+            else if( varTypeRegex.match(stmt) )             // var name :Type
             {
                 vars.set(varTypeRegex.matched(1), new Var(varTypeRegex.matched(1), varTypeRegex.matched(2)));
             }
-            else if( varValRegex.match(stmt) )
+            else if( varValRegex.match(stmt) )              // var name = val
             {
                 vars.set(varValRegex.matched(1), new Var(varValRegex.matched(1)));
                 commands.add(new Statement(varValRegex.matched(1)+" = "+varValRegex.matched(2)));
             }
-            else if( varRegex.match(stmt) )
+            else if( varRegex.match(stmt) )                 // var name
             {
                 vars.set(varRegex.matched(1), new Var(varRegex.matched(1)));
             }
