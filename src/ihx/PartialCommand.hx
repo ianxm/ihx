@@ -136,4 +136,28 @@ class PartialCommand
     {
         return "\r" + StringTools.rpad("", " ", str.length + prompt.length);
     }
+
+    /**
+       backspace to beginning of the command
+    **/
+    public function killLeft()
+    {
+        killText(0, pos);
+    }
+
+    /**
+       delete to end of the command
+    **/
+    public function killRight()
+    {
+        killText(pos, str.length);
+    }
+
+
+    private function killText(startIndex, endIndex)
+    {
+        if(startIndex < pos && pos <= endIndex)
+            pos = startIndex;
+        str = str.substring(0, startIndex) + str.substr(endIndex);
+    }
 }

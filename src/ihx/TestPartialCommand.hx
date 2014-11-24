@@ -125,4 +125,36 @@ class TestPartialCommand extends haxe.unit.TestCase
         cmd.set("cba");
         assertEquals("cba", cmd.toString());
     }
+
+    public function testKillLeft()
+    {
+        var cmd = new PartialCommand("abcd");
+
+        cmd.cursorBack();
+        cmd.cursorBack();
+        cmd.killLeft();
+        assertEquals("cd", cmd.toString());
+
+        cmd.del();
+        assertEquals("d", cmd.toString());
+
+        cmd.killLeft();
+        assertEquals("d", cmd.toString());
+    }
+
+    public function testKillRight()
+    {
+        var cmd = new PartialCommand("abcd");
+
+        cmd.cursorBack();
+        cmd.cursorBack();
+        cmd.killRight();
+        assertEquals("ab", cmd.toString());
+
+        cmd.backspace();
+        assertEquals("a", cmd.toString());
+
+        cmd.killRight();
+        assertEquals("a", cmd.toString());
+    }
 }
