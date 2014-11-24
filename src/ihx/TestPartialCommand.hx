@@ -33,11 +33,7 @@ class TestPartialCommand extends haxe.unit.TestCase
 
     public function testInsert()
     {
-        var cmd = new PartialCommand();
-        cmd.addChar("a");
-        cmd.addChar("b");
-        cmd.addChar("c");
-        assertEquals("abc", cmd.toString());
+        var cmd = new PartialCommand("abc");
 
         cmd.cursorBack();
         cmd.cursorBack();
@@ -55,11 +51,7 @@ class TestPartialCommand extends haxe.unit.TestCase
 
     public function testBackspace1()
     {
-        var cmd = new PartialCommand();
-        cmd.addChar("a");
-        cmd.addChar("b");
-        cmd.addChar("c");
-        assertEquals("abc", cmd.toString());
+        var cmd = new PartialCommand("abc");
 
         cmd.backspace();
         assertEquals("ab", cmd.toString());
@@ -76,11 +68,7 @@ class TestPartialCommand extends haxe.unit.TestCase
 
     public function testBackspace2()
     {
-        var cmd = new PartialCommand();
-        cmd.addChar("a");
-        cmd.addChar("b");
-        cmd.addChar("c");
-        assertEquals("abc", cmd.toString());
+        var cmd = new PartialCommand("abc");
 
         cmd.cursorBack();
         cmd.backspace();
@@ -96,11 +84,7 @@ class TestPartialCommand extends haxe.unit.TestCase
 
     public function testDel()
     {
-        var cmd = new PartialCommand();
-        cmd.addChar("a");
-        cmd.addChar("b");
-        cmd.addChar("c");
-        assertEquals("abc", cmd.toString());
+        var cmd = new PartialCommand("abc");
 
         cmd.del();
         assertEquals("abc", cmd.toString());
@@ -123,11 +107,7 @@ class TestPartialCommand extends haxe.unit.TestCase
 
     public function testHome()
     {
-        var cmd = new PartialCommand();
-        cmd.addChar("a");
-        cmd.addChar("b");
-        cmd.addChar("c");
-        assertEquals("abc", cmd.toString());
+        var cmd = new PartialCommand("abc");
 
         cmd.home();
         cmd.addChar("1");
@@ -140,11 +120,7 @@ class TestPartialCommand extends haxe.unit.TestCase
 
     public function testSet()
     {
-        var cmd = new PartialCommand();
-        cmd.addChar("a");
-        cmd.addChar("b");
-        cmd.addChar("c");
-        assertEquals("abc", cmd.toString());
+        var cmd = new PartialCommand("abc");
 
         cmd.set("cba");
         assertEquals("cba", cmd.toString());

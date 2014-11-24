@@ -30,10 +30,9 @@ class PartialCommand
     /** prompt to show **/
     public var prompt(null,default) :String;
 
-    public function new()
+    public function new(initialCommand="")
     {
-        str = "";
-        pos = 0;
+        set(initialCommand);
         prompt = "";
     }
 
