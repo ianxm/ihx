@@ -27,14 +27,17 @@ class PartialCommand
     /** cursor position **/
     private var pos :Int;
 
+    /** previously deleted text we may wish to yank back **/
+    private var killedText :String;
+
     /** prompt to show **/
     public var prompt(null,default) :String;
 
-    public function new()
+    public function new(initialCommand="")
     {
-        str = "";
-        pos = 0;
+        set(initialCommand);
         prompt = "";
+        killedText = "";
     }
 
     /**
@@ -136,5 +139,39 @@ class PartialCommand
     public function clearString()
     {
         return "\r" + StringTools.rpad("", " ", str.length + prompt.length);
+    }
+
+    /**
+       backspace to beginning of the command.  killed text can later be yanked back.
+    **/
+    public function killLeft()
+    {
+        killText(0, pos);
+    }
+
+    /**
+       delete to end of the command.  killed text can later be yanked back.
+    **/
+    public function killRight()
+    {
+        killText(pos, str.length);
+    }
+
+    private function killText(startIndex, endIndex)
+    {
+        if(startIndex < pos && pos <= endIndex)
+            pos = startIndex;
+
+        killedText = str.substring(startIndex, endIndex);
+        str = str.substring(0, startIndex) + str.substr(endIndex);
+    }
+
+    /**
+       yank previously killed text
+    **/
+    public function yank()
+    {
+        str = str.substring(0, pos) + killedText + str.substr(pos);
+        pos += killedText.length;
     }
 }

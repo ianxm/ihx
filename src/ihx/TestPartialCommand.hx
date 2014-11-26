@@ -33,11 +33,7 @@ class TestPartialCommand extends haxe.unit.TestCase
 
     public function testInsert()
     {
-        var cmd = new PartialCommand();
-        cmd.addChar("a");
-        cmd.addChar("b");
-        cmd.addChar("c");
-        assertEquals("abc", cmd.toString());
+        var cmd = new PartialCommand("abc");
 
         cmd.cursorBack();
         cmd.cursorBack();
@@ -55,11 +51,7 @@ class TestPartialCommand extends haxe.unit.TestCase
 
     public function testBackspace1()
     {
-        var cmd = new PartialCommand();
-        cmd.addChar("a");
-        cmd.addChar("b");
-        cmd.addChar("c");
-        assertEquals("abc", cmd.toString());
+        var cmd = new PartialCommand("abc");
 
         cmd.backspace();
         assertEquals("ab", cmd.toString());
@@ -76,11 +68,7 @@ class TestPartialCommand extends haxe.unit.TestCase
 
     public function testBackspace2()
     {
-        var cmd = new PartialCommand();
-        cmd.addChar("a");
-        cmd.addChar("b");
-        cmd.addChar("c");
-        assertEquals("abc", cmd.toString());
+        var cmd = new PartialCommand("abc");
 
         cmd.cursorBack();
         cmd.backspace();
@@ -96,11 +84,7 @@ class TestPartialCommand extends haxe.unit.TestCase
 
     public function testDel()
     {
-        var cmd = new PartialCommand();
-        cmd.addChar("a");
-        cmd.addChar("b");
-        cmd.addChar("c");
-        assertEquals("abc", cmd.toString());
+        var cmd = new PartialCommand("abc");
 
         cmd.del();
         assertEquals("abc", cmd.toString());
@@ -123,11 +107,7 @@ class TestPartialCommand extends haxe.unit.TestCase
 
     public function testHome()
     {
-        var cmd = new PartialCommand();
-        cmd.addChar("a");
-        cmd.addChar("b");
-        cmd.addChar("c");
-        assertEquals("abc", cmd.toString());
+        var cmd = new PartialCommand("abc");
 
         cmd.home();
         cmd.addChar("1");
@@ -140,13 +120,109 @@ class TestPartialCommand extends haxe.unit.TestCase
 
     public function testSet()
     {
-        var cmd = new PartialCommand();
-        cmd.addChar("a");
-        cmd.addChar("b");
-        cmd.addChar("c");
-        assertEquals("abc", cmd.toString());
+        var cmd = new PartialCommand("abc");
 
         cmd.set("cba");
         assertEquals("cba", cmd.toString());
+    }
+
+    public function testKillLeft()
+    {
+        var cmd = new PartialCommand("abcd");
+
+        cmd.cursorBack();
+        cmd.cursorBack();
+        cmd.killLeft();
+        assertEquals("cd", cmd.toString());
+
+        cmd.del();
+        assertEquals("d", cmd.toString());
+
+        cmd.killLeft();
+        assertEquals("d", cmd.toString());
+    }
+
+    public function testKillRight()
+    {
+        var cmd = new PartialCommand("abcd");
+
+        cmd.cursorBack();
+        cmd.cursorBack();
+        cmd.killRight();
+        assertEquals("ab", cmd.toString());
+
+        cmd.backspace();
+        assertEquals("a", cmd.toString());
+
+        cmd.killRight();
+        assertEquals("a", cmd.toString());
+    }
+
+    public function testYankAfterKillLeft()
+    {
+        var cmd = new PartialCommand("abcd");
+
+        cmd.cursorBack();
+        cmd.cursorBack();
+        cmd.killLeft();
+        assertEquals("cd", cmd.toString());
+
+        cmd.yank();
+        assertEquals("abcd", cmd.toString());
+
+        cmd.end();
+        cmd.yank();
+        assertEquals("abcdab", cmd.toString());
+
+        cmd.backspace();
+        assertEquals("abcda", cmd.toString());
+    }
+
+    public function testYankAfterKillRight()
+    {
+        var cmd = new PartialCommand("abcd");
+
+        cmd.cursorBack();
+        cmd.cursorBack();
+        cmd.killRight();
+        assertEquals("ab", cmd.toString());
+
+        cmd.yank();
+        assertEquals("abcd", cmd.toString());
+
+        cmd.home();
+        cmd.yank();
+        assertEquals("cdabcd", cmd.toString());
+
+        cmd.del();
+        assertEquals("cdbcd", cmd.toString());
+    }
+
+    public function testYankAfterMultipleKills()
+    {
+        var cmd = new PartialCommand("abcd");
+
+        cmd.cursorBack();
+        cmd.killRight();
+        assertEquals("abc", cmd.toString());
+
+        cmd.cursorBack();
+        cmd.killRight();
+        assertEquals("ab", cmd.toString());
+
+        cmd.yank();
+        assertEquals("abc", cmd.toString());
+    }
+
+    public function testYankWithNoKill()
+    {
+        var cmd = new PartialCommand("abc");
+        cmd.yank();
+        assertEquals("abc", cmd.toString());
+
+        cmd.cursorBack();
+        cmd.yank();
+        cmd.backspace();
+        assertEquals("ac", cmd.toString());
     }
 }
