@@ -27,7 +27,7 @@ import ihx.CmdProcessor;
 **/
 class IHx
 {
-    private static var VERSION = "0.3.4";
+    private static var VERSION = "0.3.5";
 
     /** the source for commands **/
     private var console :ConsoleReader;
@@ -48,7 +48,7 @@ class IHx
     {
         console = new ConsoleReader();
     }
-  
+
     /**
        get commands from the console, process them, display output
        handle ihx commands, get haxe statement (can be multiline), parse it, pass to execution method
@@ -59,9 +59,9 @@ class IHx
         var paths:Set<String> = [];
         var libs:Set<String> = [];
         var defines:Set<String> = [];
-        
+
         var args = Sys.args();
-		if (args.length > 0 && Sys.systemName() == "Windows") args.shift();
+        if (args.length > 0 && Sys.systemName() == "Windows") args.shift();
         while( args.length > 0 )
         {
             var arg = args.shift();

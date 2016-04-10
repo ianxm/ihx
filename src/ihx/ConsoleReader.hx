@@ -120,12 +120,21 @@ class ConsoleReader
                     Lib.println("");
                     history.add(cmd.toString());
                     return cmd.toString();
+                case _ if(code == codeSet.ctrld):
+                    if( cmd.toString().length > 0)
+                    {
+                        cmd.del();
+                    }
+                    else
+                    {
+                        Lib.println("");
+                        std.Sys.exit(1);
+                    }
                 case _ if(code == codeSet.ctrlp): cmd.set(history.prev());
                 case _ if(code == codeSet.ctrln): cmd.set(history.next());
                 case _ if(code == codeSet.ctrlk): cmd.killRight();
                 case _ if(code == codeSet.ctrlu): cmd.killLeft();
                 case _ if(code == codeSet.ctrly): cmd.yank();
-                case _ if(code == codeSet.ctrld): cmd.del(); // del shares code with tilde?
                 case _ if(code == codeSet.ctrla): cmd.home();
                 case _ if(code == codeSet.ctrle): cmd.end();
                 case _ if(code == codeSet.ctrlf): cmd.cursorForward();
