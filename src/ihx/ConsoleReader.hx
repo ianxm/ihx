@@ -66,7 +66,7 @@ class ConsoleReader
         if( std.Sys.systemName() == "Windows" )
             codeSet = {arrow: 224, up: 72, down: 80, right: 77, left: 75, home: 71, end: 79,
                        backspace: 8, ctrlc: 3, enter: 13,
-                       ctrla: 1, ctrle: 5, ctrlb: 2, ctrlf: 6, ctrld: 83,
+                       ctrla: 1, ctrle: 5, ctrlb: 2, ctrlf: 6, ctrld: 4,
                        ctrlp: -1, ctrln: -1, ctrlk: -1, ctrlu: -1, ctrly: -1
             };
         else
