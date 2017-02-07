@@ -22,7 +22,7 @@ abstract Set<T>(Array<T>) to Iterable<T>
 	public inline function iterator() return this.iterator();
 	public inline function join( sep ) return this.join( sep );
 
-	@:from public static function fromArray( a:Array<T> ) {
+	@:from public static function fromArray<T>( a:Array<T> ) {
 		var s = [];
 		for ( item in a ) {
 			if ( s.indexOf(item)==-1 ) s.push( item );
