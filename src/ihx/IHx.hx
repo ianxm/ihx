@@ -27,10 +27,18 @@ import ihx.CmdProcessor;
 **/
 class IHx
 {
-    private static var VERSION = "0.3.5";
+    private static var VERSION = "0.3.6";
 
     /** the source for commands **/
     private var console :ConsoleReader;
+
+    /** 
+       whether to run minimal interpretor, e.g. Codi.
+       codi allows running interpretors in Vim but won't 
+       work with ihx more elaborated interpretor, so ihx can be 
+       started with -codi option
+     */
+    private var useCodi :Bool;
 
     /**
        start the interpreter
@@ -47,6 +55,7 @@ class IHx
     public function new()
     {
         console = new ConsoleReader();
+        useCodi = false;
     }
 
     /**
@@ -76,15 +85,18 @@ class IHx
                     defines.add(args.shift());
                 case cwd if (FileSystem.exists(cwd)):
                     Sys.setCwd(cwd);
+                case "-codi":
+                    useCodi = true;
                 case _:
                     Lib.println('Unknown argument "$arg"');
-                    Lib.println("Usage: neko ihx [-debug] [-cp /class/path/] [-lib ihx:0.3.0] [-D some_define] [workingdir]");
+                    Lib.println("Usage: neko ihx [-debug] [-cp /class/path/] [-lib ihx:0.3.0] [-D some_define] [-codi] [workingdir]");
                     Sys.exit(1);
             }
         }
 
         Lib.println("haxe interactive shell v" + VERSION);
         Lib.println("type \"help\" for help");
+        if (useCodi) Lib.println("Launched with -codi");
 
         var processor = new CmdProcessor(debug,paths,libs,defines);
 
@@ -94,31 +106,54 @@ class IHx
             console.cmd.prompt = ">> ";
             Lib.print(">> ");
 
-            while (true)
+            if (!useCodi) 
             {
-                try
+                while (true)
                 {
-                    var ret = processor.process(console.readLine());
-                    if( ret != null )
-                        Lib.println(ret+"\n");
-                }
-                catch (ex:CmdError)
-                {
-                    switch (ex)
+                    try
                     {
-                    case IncompleteStatement:
+                        var ret = processor.process(console.readLine());
+                        if( ret != null )
+                            Lib.println(ret+"\n");
+                    }
+                    catch (ex:CmdError)
+                    {
+                        switch (ex)
                         {
-                            console.cmd.prompt = ".. "; // continue prompt
-                            Lib.print(".. ");
-                            continue;
+                        case IncompleteStatement:
+                            {
+                                console.cmd.prompt = ".. "; // continue prompt
+                                Lib.print(".. ");
+                                continue;
+                            }
+                        case InvalidStatement(msg): Lib.println(msg);
                         }
-                    case InvalidStatement(msg): Lib.println(msg);
+                    }
+
+                    // restart after an error or completed command
+                    console.cmd.prompt = ">> ";
+                    Lib.print(">> ");
+                }
+            }
+            else 
+            {
+                // using codi: vim with the codi plugin requires
+                // a more conventional interpreter, hence following 
+                // implementation (launched with "haxelib run ihx -codi") 
+                while (true) {
+                    Lib.print(">> ");
+                    var line = Sys.stdin().readLine();
+                    Lib.println(line);
+                    if (line == "exit") break;
+                    else if (StringTools.trim(line) == "") continue;
+                    else {
+                        try {
+                            var ret = processor.process(line);
+                            if (ret != null) Lib.println(ret + "\n");
+                        }
+                        catch (ex:CmdError) { Lib.println("Bollocks"); }
                     }
                 }
-
-                // restart after an error or completed command
-                console.cmd.prompt = ">> ";
-                Lib.print(">> ");
             }
         }
     }
