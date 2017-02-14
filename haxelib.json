@@ -5,8 +5,8 @@
   "tags": ["neko","shell","interactive","cli","tool","run"],
   "description": "ihx is an interactive haxe scripting shell",
   "contributors": ["ianxm"],
-  "releasenote": "Allow commas in type declarations",
-  "version": "0.3.4",
+  "releasenote": "codi integration",
+  "version": "0.3.6",
   "url": "http://github.com/ianxm/ihx",
   "dependencies": {
   }
