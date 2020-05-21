@@ -17,7 +17,6 @@
 package ihx;
 
 using Lambda;
-import neko.Lib;
 import haxe.io.Eof;
 import sys.io.File;
 import sys.io.Process;

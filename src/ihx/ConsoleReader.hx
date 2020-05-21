@@ -16,7 +16,7 @@
 
 package ihx;
 
-import neko.Lib;
+import haxe.io.Output;
 
 typedef CodeSet = {
     var arrow     :Int;
@@ -50,12 +50,13 @@ class ConsoleReader
     private var code :Int;
     private var history :History;
     private var codeSet :CodeSet;
+    private var stdout :Output = Sys.stdout();
 
     public static function main()
     {
         var cr = new ConsoleReader();
         var cmdStr = cr.readLine();
-        Lib.println("\n" + cmdStr);
+        Sys.stdout().writeString("\n" + cmdStr + "\n");
     }
 
     public function new()
@@ -85,7 +86,7 @@ class ConsoleReader
         {
             var clearPrevCommand = cmd.clearString();
             code = Sys.getChar(false);
-            // Lib.println("\ngot: " + code +"\n");
+            // stdout.writeString("\ngot: " + code +"\n");
             if( code == codeSet.arrow ) // arrow keys
             {
                 if( std.Sys.systemName() != "Windows" )
@@ -113,11 +114,11 @@ class ConsoleReader
                     }
                     else
                     {
-                        Lib.println("");
+                        stdout.writeString("\n");
                         std.Sys.exit(1);
                     }
                 case _ if(code == codeSet.enter):
-                    Lib.println("");
+                    stdout.writeString("\n");
                     history.add(cmd.toString());
                     return cmd.toString();
                 case _ if(code == codeSet.ctrld):
@@ -127,7 +128,7 @@ class ConsoleReader
                     }
                     else
                     {
-                        Lib.println("");
+                        stdout.writeString("\n");
                         std.Sys.exit(1);
                     }
                 case _ if(code == codeSet.ctrlp): cmd.set(history.prev());
@@ -143,8 +144,8 @@ class ConsoleReader
                 case _ if( code>=32 && code<=126 ): cmd.addChar(String.fromCharCode(code));
                 }
             }
-            Lib.print(clearPrevCommand);
-            Lib.print(cmd.toConsole());
+            stdout.writeString(clearPrevCommand);
+            stdout.writeString(cmd.toConsole());
         }
         return "";
     }

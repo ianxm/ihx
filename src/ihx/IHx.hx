@@ -17,7 +17,7 @@
 package ihx;
 
 import sys.io.FileInput;
-import neko.Lib;
+import haxe.io.Output;
 import sys.FileSystem;
 import ihx.CmdProcessor;
 
@@ -32,10 +32,13 @@ class IHx
     /** the source for commands **/
     private var console :ConsoleReader;
 
-    /** 
+    /** stdout stream */
+    private var stdout :Output = Sys.stdout();
+
+    /**
        whether to run minimal interpretor, e.g. Codi.
-       codi allows running interpretors in Vim but won't 
-       work with ihx more elaborated interpretor, so ihx can be 
+       codi allows running interpretors in Vim but won't
+       work with ihx more elaborated interpretor, so ihx can be
        started with -codi option
      */
     private var useCodi :Bool;
@@ -88,15 +91,15 @@ class IHx
                 case "-codi":
                     useCodi = true;
                 case _:
-                    Lib.println('Unknown argument "$arg"');
-                    Lib.println("Usage: neko ihx [-debug] [-cp /class/path/] [-lib ihx:0.3.0] [-D some_define] [-codi] [workingdir]");
+                    stdout.writeString('Unknown argument "$arg"\n');
+                    stdout.writeString("Usage: neko ihx [-debug] [-cp /class/path/] [-lib ihx:0.3.0] [-D some_define] [-codi] [workingdir]\n");
                     Sys.exit(1);
             }
         }
 
-        Lib.println("haxe interactive shell v" + VERSION);
-        Lib.println("type \"help\" for help");
-        if (useCodi) Lib.println("Launched with -codi");
+        stdout.writeString("haxe interactive shell v" + VERSION + "\n");
+        stdout.writeString("type \"help\" for help\n");
+        if (useCodi) stdout.writeString("Launched with -codi\n");
 
         var processor = new CmdProcessor(debug,paths,libs,defines);
 
@@ -104,9 +107,9 @@ class IHx
         {
             // initial prompt
             console.cmd.prompt = ">> ";
-            Lib.print(">> ");
+            stdout.writeString(">> ");
 
-            if (!useCodi) 
+            if (!useCodi)
             {
                 while (true)
                 {
@@ -114,7 +117,7 @@ class IHx
                     {
                         var ret = processor.process(console.readLine());
                         if( ret != null )
-                            Lib.println(ret+"\n");
+                            stdout.writeString(ret+"\n");
                     }
                     catch (ex:CmdError)
                     {
@@ -123,35 +126,35 @@ class IHx
                         case IncompleteStatement:
                             {
                                 console.cmd.prompt = ".. "; // continue prompt
-                                Lib.print(".. ");
+                                stdout.writeString(".. ");
                                 continue;
                             }
-                        case InvalidStatement(msg): Lib.println(msg);
+                        case InvalidStatement(msg): stdout.writeString(msg + "\n");
                         }
                     }
 
                     // restart after an error or completed command
                     console.cmd.prompt = ">> ";
-                    Lib.print(">> ");
+                    stdout.writeString(">> ");
                 }
             }
-            else 
+            else
             {
                 // using codi: vim with the codi plugin requires
-                // a more conventional interpreter, hence following 
-                // implementation (launched with "haxelib run ihx -codi") 
+                // a more conventional interpreter, hence following
+                // implementation (launched with "haxelib run ihx -codi")
                 while (true) {
-                    Lib.print(">> ");
+                    stdout.writeString(">> ");
                     var line = Sys.stdin().readLine();
-                    Lib.println(line);
+                    stdout.writeString(line + "\n");
                     if (line == "exit") break;
                     else if (StringTools.trim(line) == "") continue;
                     else {
                         try {
                             var ret = processor.process(line);
-                            if (ret != null) Lib.println(ret + "\n");
+                            if (ret != null) stdout.writeString(ret + "\n");
                         }
-                        catch (ex:CmdError) { Lib.println("Bollocks"); }
+                        catch (ex:CmdError) { stdout.writeString("Bollocks\n"); }
                     }
                 }
             }
