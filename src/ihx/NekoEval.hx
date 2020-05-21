@@ -55,22 +55,22 @@ class NekoEval
     public function getArgs()
     {
         var args = ["-neko", tmpNekoPath, "-cp", tmpDir, "-main", tmpHxFname, "-cmd", "neko "+tmpNekoPath];
-        
+
         if(debug) args.push('-debug');
-        for(i in libs) 
+        for(i in libs)
         {
             args.push('-lib');
-            args.push(i); 
+            args.push(i);
         }
-        for(i in classpath) 
+        for(i in classpath)
         {
             args.push('-cp');
-            args.push(i); 
+            args.push(i);
         }
-        for(i in defines) 
+        for(i in defines)
         {
             args.push('-D');
-            args.push(i); 
+            args.push(i);
         }
         return args;
     }
@@ -79,16 +79,17 @@ class NekoEval
     {
         var ret = "";
         File.saveContent(tmpHxPath, progStr);
-        
+
         var proc = new Process("haxe", getArgs());
         var sb = new StringBuf();
-		var isWindows = Sys.systemName() == "Windows";
+        var isWindows = Sys.systemName() == "Windows";
         try {
             var pastOld = false;
             while( true )
             {
                 var line = proc.stdout.readLine();
-				if (isWindows && line.charCodeAt(line.length-1) == 13) line = line.substring(0, line.length - 1);
+                if( isWindows && line.charCodeAt(line.length-1) == 13 )
+                    line = line.substring(0, line.length - 1);
                 if( !pastOld && line==Program.separator )
                 {
                     pastOld = true;
@@ -104,7 +105,8 @@ class NekoEval
             while( true )
             {
                 var line = proc.stderr.readLine();
-				if (isWindows && line.charCodeAt(line.length-1) == 13) line = line.substring(0, line.length - 1);
+                if( isWindows && line.charCodeAt(line.length-1) == 13 )
+                    line = line.substring(0, line.length - 1);
                 if( errRegex.match(line) )
                     sb.add("error: "+ errRegex.matched(1) +"\n");
                 else

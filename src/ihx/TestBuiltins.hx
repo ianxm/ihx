@@ -137,15 +137,15 @@ class TestBuiltins extends haxe.unit.TestCase
     {
         var proc = new CmdProcessor();
         var ret = proc.process("var a=new Map<String,Int>()");
-        assertEquals("Map<String, Int> : {}", ret);
+        assertEquals("haxe.ds.Map<String, Int> : {}", ret);
 
         ret = proc.process("a.set('one', 1);");
         ret = proc.process("a");
-        assertEquals("Map<String, Int> : {one => 1}", ret);
+        assertEquals("haxe.ds.Map<String, Int> : {one => 1}", ret);
 
         ret = proc.process("a.set('two', 2);");
         ret = proc.process("a");
-        assertEquals("Map<String, Int> : {one => 1, two => 2}", ret);
+        assertEquals("haxe.ds.Map<String, Int> : {one => 1, two => 2}", ret);
 
         ret = proc.process("a.exists('one')");
         assertEquals("Bool : true",ret);
@@ -158,7 +158,7 @@ class TestBuiltins extends haxe.unit.TestCase
     {
         var proc = new CmdProcessor();
         var ret = proc.process("var a=[ 'one'=>1, 'two'=>2 ]");
-        assertEquals("Map<String, Int> : {one => 1, two => 2}", ret);
+        assertEquals("haxe.ds.Map<String, Int> : {one => 1, two => 2}", ret);
 
         ret = proc.process("a['two']");
         assertEquals("Null<Int> : 2", ret);
@@ -194,7 +194,7 @@ class TestBuiltins extends haxe.unit.TestCase
         ret = proc.process("var f=function(ii) { return ii*3; }");
         ret = proc.process("var b=Lambda.map(a,f)");
         ret = proc.process("b");
-        assertEquals("List<Int> : {3, 9, 15, 18, 9}", ret);
+        assertEquals("Array<Int> : [3,9,15,18,9]", ret);
         ret = proc.process("Lambda.has(a,1)");
         assertEquals("Bool : true", ret);
     }
@@ -205,13 +205,13 @@ class TestBuiltins extends haxe.unit.TestCase
         var ret = proc.process("var a=new List()");
         assertEquals("Unknown<0> : {}", ret);
 
-        ret = proc.process("a.add(1)");
+        ret = proc.process("a.add(1);");
         ret = proc.process("a");
-        assertEquals("List<Int> : {1}", ret);
+        assertEquals("haxe.ds.List<Int> : {1}", ret);
 
-        ret = proc.process("a.add(4)");
+        ret = proc.process("a.add(4);");
         ret = proc.process("a");
-        assertEquals("List<Int> : {1, 4}", ret);
+        assertEquals("haxe.ds.List<Int> : {1, 4}", ret);
 
         ret = proc.process("a.last()");
         assertEquals("Null<Int> : 4", ret);
@@ -278,7 +278,7 @@ class TestBuiltins extends haxe.unit.TestCase
         assertEquals("StringBuf : one", ret);
         ret = proc.process("a.add(' two')");
         ret = proc.process("a");
-        assertEquals("StringBuf : one two", ret); 
+        assertEquals("StringBuf : one two", ret);
     }
 
     public function testStringTools()

@@ -20,7 +20,6 @@ using Lambda;
 using StringTools;
 import sys.FileSystem;
 import haxe.ds.StringMap;
-import neko.Lib;
 import ihx.program.Program;
 
 enum CmdError
@@ -33,7 +32,7 @@ class CmdProcessor
 {
     /** accumulating command fragments */
     private var sb :StringBuf;
-  
+
     /** hash connecting interpreter commands to the functions that implement them */
     private var commands : StringMap<Dynamic>;
 
@@ -45,6 +44,9 @@ class CmdProcessor
 
     /** name of new lib to include in build */
     private var cmdStr :String;
+
+    /** check for newline at the end of the string */
+    private var endNewline = ~/\n$/;
 
     public function new( ?useDebug=false, ?paths:Set<String>, ?libs:Set<String>, ?defines:Set<String> )
     {
@@ -115,7 +117,7 @@ class CmdProcessor
         }
 
         sb = new StringBuf();
-        return (ret==null) ? null : Std.string(ret);
+        return (ret==null) ? null : Std.string(endNewline.replace(ret, ""));
     }
 
     private function firstWord(str :String) :String
@@ -125,7 +127,7 @@ class CmdProcessor
             return str;
         return str.substr(0, space);
     }
-                
+
     /**
        return a list of all user defined variables
     **/
@@ -136,7 +138,7 @@ class CmdProcessor
             return "vars: (none)";
         return wordWrap("vars: "+ vars.join(", "));
     }
-                
+
     /**
        toggle debug compilation mode
     **/
@@ -209,13 +211,13 @@ class CmdProcessor
     }
 
     /**
-       implementation method to check the library exists and then add it to the compile command. 
+       implementation method to check the library exists and then add it to the compile command.
     **/
     private function doAddLib( name:String ) :String
     {
         // Check that the library exists
         var haxelibName = name.split(":")[0];
-        if( 0 != new sys.io.Process("haxelib", ["path",haxelibName]).exitCode() ) 
+        if( 0 != new sys.io.Process("haxelib", ["path",haxelibName]).exitCode() )
             return 'haxelib `$haxelibName` could not be loaded';
         nekoEval.libs.add(name);
         return "added lib: " + name;
@@ -308,7 +310,7 @@ class CmdProcessor
 
         var lines = program.getProgram(false).split("\n");
         var lineNumber = 0;
-        for( l in lines ) 
+        for( l in lines )
         {
             sb.add(Std.string(++lineNumber).lpad(" ",4) + ": " + l + "\n");
         }
@@ -319,7 +321,7 @@ class CmdProcessor
     {
         if( str.length<=80 )
             return str;
-    
+
         var words :Array<String> = str.split(" ");
         var sb = new StringBuf();
         var ii = 0; // index of current word
