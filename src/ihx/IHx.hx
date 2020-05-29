@@ -52,12 +52,8 @@ class IHx
         interpreter.run();
     }
 
-    /**
-       populate the builtin variable lists, instantiate the hscript engine
-    **/
     public function new()
     {
-        console = new ConsoleReader();
         useCodi = false;
     }
 
@@ -71,6 +67,9 @@ class IHx
         var paths:Set<String> = [];
         var libs:Set<String> = [];
         var defines:Set<String> = [];
+
+        var maxHistory = -1;
+        var historyFile = "";
 
         var args = Sys.args();
         if (args.length > 0 && Sys.systemName() == "Windows") args.shift();
@@ -90,12 +89,17 @@ class IHx
                     Sys.setCwd(cwd);
                 case "-codi":
                     useCodi = true;
+                case "-hist-file":
+                    historyFile = args.shift();
+                case "-hist-max":
+                    maxHistory = Std.parseInt(args.shift());
                 case _:
                     stdout.writeString('Unknown argument "$arg"\n');
                     stdout.writeString("Usage: neko ihx [-debug] [-cp /class/path/] [-lib ihx:0.3.0] [-D some_define] [-codi] [workingdir]\n");
                     Sys.exit(1);
             }
         }
+        console = new ConsoleReader(maxHistory, historyFile);
 
         stdout.writeString("haxe interactive shell v" + VERSION + "\n");
         stdout.writeString("type \"help\" for help\n");

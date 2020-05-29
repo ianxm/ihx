@@ -59,11 +59,11 @@ class ConsoleReader
         Sys.stdout().writeString("\n" + cmdStr + "\n");
     }
 
-    public function new()
+    public function new(maxHistory=-1, historyFile="")
     {
         code = 0;
         cmd = new PartialCommand();
-        history = new History();
+        history = new History(maxHistory, historyFile);
         if( std.Sys.systemName() == "Windows" )
             codeSet = {arrow: 224, up: 72, down: 80, right: 77, left: 75, home: 71, end: 79,
                        backspace: 8, ctrlc: 3, enter: 13,

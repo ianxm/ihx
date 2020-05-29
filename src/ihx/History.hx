@@ -22,17 +22,51 @@ package ihx;
 class History
 {
     private var commands :Array<String>;
+    private var maxCommands :Int;
+    private var saveFile :String;
     private var pos :Int;
 
-    public function new()
+    public function new(maxCommands=-1, saveFile="")
     {
-        commands = [""];
-        pos = 1;
+        // The empty string will always be in the history at index 0,
+        // and should not count against the command history limit.
+        this.maxCommands = maxCommands + 1;
+        this.saveFile = saveFile;
+        if ( saveFile.length > 0 ) 
+        {
+            try
+            {
+                commands = sys.io.File.getContent(saveFile).split("\n");
+                commands.insert(0, "");
+            }
+            catch ( err: Dynamic ) {
+                commands = [""];
+            }
+            if ( maxCommands > 0 && commands.length > maxCommands )
+            {
+                commands = commands.splice(0, commands.length - maxCommands);
+            }
+            pos = commands.length;
+        }
+        else
+        {
+            commands = [""];
+            pos = 1;
+        }
     }
 
     public function add(cmd)
     {
         commands.push(cmd);
+        if ( maxCommands > 0 && commands.length > maxCommands ) 
+        {
+            commands.shift();
+        }
+        if ( saveFile.length > 0 )
+        {
+            // Save the command history without the empty string at index 0.
+            sys.io.File.saveContent(saveFile, commands.slice(1).join("\n"));
+        }
         pos = commands.length;
     }
 
