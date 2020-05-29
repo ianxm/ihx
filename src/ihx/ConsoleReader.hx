@@ -146,6 +146,7 @@ class ConsoleReader
             }
             stdout.writeString(clearPrevCommand);
             stdout.writeString(cmd.toConsole());
+            stdout.flush();
         }
         return "";
     }
