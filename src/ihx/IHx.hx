@@ -96,7 +96,6 @@ class IHx
                 case "-codi":
                     useCodi = true;
                 case "-hist-file":
-                    trace("what??");
                     historyFile = args.shift();
                 case "-hist-max":
                     maxHistory = Std.parseInt(args.shift());
