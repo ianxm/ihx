@@ -34,38 +34,67 @@ class History
         this.saveFile = saveFile;
         if ( saveFile.length > 0 ) 
         {
-            try
-            {
-                commands = sys.io.File.getContent(saveFile).split("\n");
-                commands.insert(0, "");
-            }
-            catch ( err: Dynamic ) {
-                commands = [""];
-            }
-            if ( maxCommands > 0 && commands.length > maxCommands )
-            {
-                commands = commands.splice(0, commands.length - maxCommands);
-            }
-            pos = commands.length;
+            load();
         }
         else
         {
             commands = [""];
             pos = 1;
         }
+        // Attempt to save the history so the user will be warned in advance
+        // if it fails.
+        save();
+
+        pos = commands.length;
+    }
+
+    private function load()
+    {
+        try
+        {
+            commands = sys.io.File.getContent(saveFile).split("\n");
+            commands.insert(0, "");
+        }
+        catch ( err: Dynamic ) {
+            Sys.stdout().writeString('Warning! Failed to read history from $saveFile: $err\n');
+            commands = [""];
+        }
+        if ( isFull() )
+        {
+            commands = commands.splice(0, commands.length - maxCommands);
+        }
+    }
+
+    public function save()
+    {
+        if ( saveFile.length > 0 )
+        {
+            try
+            {
+                // Save the command history without the empty string at index 0.
+                sys.io.File.saveContent(saveFile, commands.slice(1).join("\n"));
+            }
+            catch ( err: Dynamic )
+            {
+                Sys.stdout().writeString('Warning! Failed to write history to $saveFile: $err\n');
+                
+                // Don't try saving the history more than once
+                saveFile = "";
+            }
+        }
+    }
+
+    private function isFull() {
+        return maxCommands > 0 && commands.length > maxCommands;
     }
 
     public function add(cmd)
     {
         commands.push(cmd);
-        if ( maxCommands > 0 && commands.length > maxCommands ) 
+        if ( isFull() ) 
         {
+            // Drop the oldest command to save the newest one
             commands.shift();
-        }
-        if ( saveFile.length > 0 )
-        {
-            // Save the command history without the empty string at index 0.
-            sys.io.File.saveContent(saveFile, commands.slice(1).join("\n"));
         }
         pos = commands.length;
     }

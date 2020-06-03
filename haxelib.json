@@ -9,6 +9,6 @@
   "version": "0.3.6",
   "url": "http://github.com/ianxm/ihx",
   "dependencies": {
-    "hx3compat"
+    "hx3compat": ""
   }
 }

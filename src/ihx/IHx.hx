@@ -57,6 +57,12 @@ class IHx
         useCodi = false;
     }
 
+    private function quit()
+    {
+        console.saveHistory();
+        Sys.exit(0);
+    }
+
     /**
        get commands from the console, process them, display output
        handle ihx commands, get haxe statement (can be multiline), parse it, pass to execution method
@@ -68,7 +74,7 @@ class IHx
         var libs:Set<String> = [];
         var defines:Set<String> = [];
 
-        var maxHistory = -1;
+        var maxHistory = 50;
         var historyFile = "";
 
         var args = Sys.args();
@@ -90,12 +96,13 @@ class IHx
                 case "-codi":
                     useCodi = true;
                 case "-hist-file":
+                    trace("what??");
                     historyFile = args.shift();
                 case "-hist-max":
                     maxHistory = Std.parseInt(args.shift());
                 case _:
                     stdout.writeString('Unknown argument "$arg"\n');
-                    stdout.writeString("Usage: neko ihx [-debug] [-cp /class/path/] [-lib ihx:0.3.0] [-D some_define] [-codi] [workingdir]\n");
+                    stdout.writeString("Usage: neko ihx [-debug] [-cp /class/path/] [-lib ihx:0.3.0] [-D some_define] [-codi] [-hist-file file] [-hist-max max] [workingdir]\n");
                     Sys.exit(1);
             }
         }
@@ -105,7 +112,7 @@ class IHx
         stdout.writeString("type \"help\" for help\n");
         if (useCodi) stdout.writeString("Launched with -codi\n");
 
-        var processor = new CmdProcessor(debug,paths,libs,defines);
+        var processor = new CmdProcessor(quit,debug,paths,libs,defines);
 
         while( true )
         {
@@ -151,7 +158,10 @@ class IHx
                     stdout.writeString(">> ");
                     var line = Sys.stdin().readLine();
                     stdout.writeString(line + "\n");
-                    if (line == "exit") break;
+                    if (line == "exit") {
+                        console.saveHistory();
+                        break;
+                    }
                     else if (StringTools.trim(line) == "") continue;
                     else {
                         try {

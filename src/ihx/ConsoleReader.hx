@@ -78,6 +78,11 @@ class ConsoleReader
             };
     }
 
+    public function saveHistory()
+    {
+        history.save();
+    }
+
     // get a command from the console
     public function readLine()
     {
@@ -115,6 +120,7 @@ class ConsoleReader
                     else
                     {
                         stdout.writeString("\n");
+                        history.save();
                         std.Sys.exit(1);
                     }
                 case _ if(code == codeSet.enter):
@@ -129,6 +135,7 @@ class ConsoleReader
                     else
                     {
                         stdout.writeString("\n");
+                        history.save();
                         std.Sys.exit(1);
                     }
                 case _ if(code == codeSet.ctrlp): cmd.set(history.prev());
