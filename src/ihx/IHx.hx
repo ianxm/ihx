@@ -157,10 +157,7 @@ class IHx
                     stdout.writeString(">> ");
                     var line = Sys.stdin().readLine();
                     stdout.writeString(line + "\n");
-                    if (line == "exit") {
-                        console.saveHistory();
-                        break;
-                    }
+                    if (line == "exit") break;
                     else if (StringTools.trim(line) == "") continue;
                     else {
                         try {
