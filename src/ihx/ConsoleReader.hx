@@ -59,11 +59,11 @@ class ConsoleReader
         Sys.stdout().writeString("\n" + cmdStr + "\n");
     }
 
-    public function new()
+    public function new(maxHistory=-1, historyFile="")
     {
         code = 0;
         cmd = new PartialCommand();
-        history = new History();
+        history = new History(maxHistory, historyFile);
         if( std.Sys.systemName() == "Windows" )
             codeSet = {arrow: 224, up: 72, down: 80, right: 77, left: 75, home: 71, end: 79,
                        backspace: 8, ctrlc: 3, enter: 13,
@@ -76,6 +76,11 @@ class ConsoleReader
                        ctrla: 1, ctrle: 5, ctrlb: 2, ctrlf: 6, ctrld: 4,
                        ctrlp: 16, ctrln: 14, ctrlk: 11, ctrlu: 21, ctrly: 25
             };
+    }
+
+    public function saveHistory()
+    {
+        history.save();
     }
 
     // get a command from the console
@@ -115,6 +120,7 @@ class ConsoleReader
                     else
                     {
                         stdout.writeString("\n");
+                        history.save();
                         std.Sys.exit(1);
                     }
                 case _ if(code == codeSet.enter):
@@ -129,6 +135,7 @@ class ConsoleReader
                     else
                     {
                         stdout.writeString("\n");
+                        history.save();
                         std.Sys.exit(1);
                     }
                 case _ if(code == codeSet.ctrlp): cmd.set(history.prev());

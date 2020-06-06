@@ -22,17 +22,80 @@ package ihx;
 class History
 {
     private var commands :Array<String>;
+    private var maxCommands :Int;
+    private var saveFile :String;
     private var pos :Int;
 
-    public function new()
+    public function new(maxCommands=-1, saveFile="")
     {
-        commands = [""];
-        pos = 1;
+        // The empty string will always be in the history at index 0,
+        // and should not count against the command history limit.
+        this.maxCommands = maxCommands + 1;
+        this.saveFile = saveFile;
+        if ( saveFile.length > 0 ) 
+        {
+            load();
+        }
+        else
+        {
+            commands = [""];
+            pos = 1;
+        }
+        // Attempt to save the history so the user will be warned in advance
+        // if it fails.
+        save();
+
+        pos = commands.length;
+    }
+
+    private function load()
+    {
+        try
+        {
+            commands = sys.io.File.getContent(saveFile).split("\n");
+            commands.insert(0, "");
+        }
+        catch ( err: Dynamic ) {
+            Sys.stdout().writeString('Warning! Failed to read history from $saveFile: $err\n');
+            commands = [""];
+        }
+        if ( isFull() )
+        {
+            commands = commands.splice(0, commands.length - maxCommands);
+        }
+    }
+
+    public function save()
+    {
+        if ( saveFile.length > 0 )
+        {
+            try
+            {
+                // Save the command history without the empty string at index 0.
+                sys.io.File.saveContent(saveFile, commands.slice(1).join("\n"));
+            }
+            catch ( err: Dynamic )
+            {
+                Sys.stdout().writeString('Warning! Failed to write history to $saveFile: $err\n');
+                
+                // Don't try saving the history more than once
+                saveFile = "";
+            }
+        }
+    }
+
+    private function isFull() {
+        return maxCommands > 0 && commands.length > maxCommands;
     }
 
     public function add(cmd)
     {
         commands.push(cmd);
+        if ( isFull() ) 
+        {
+            // Drop the oldest command to save the newest one
+            commands.shift();
+        }
         pos = commands.length;
     }
 

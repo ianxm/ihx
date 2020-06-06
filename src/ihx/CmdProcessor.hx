@@ -48,7 +48,7 @@ class CmdProcessor
     /** check for newline at the end of the string */
     private var endNewline = ~/\n$/;
 
-    public function new( ?useDebug=false, ?paths:Set<String>, ?libs:Set<String>, ?defines:Set<String> )
+    public function new( ?quitFunction: Void -> Void, ?useDebug=false, ?paths:Set<String>, ?libs:Set<String>, ?defines:Set<String> )
     {
         nekoEval = new NekoEval();
         program = new Program(nekoEval.tmpSuffix);
@@ -68,8 +68,12 @@ class CmdProcessor
         commands.set("clear", clearVars);
         commands.set("print", printProgram);
         commands.set("help", printHelp);
-        commands.set("exit", function() std.Sys.exit(0));
-        commands.set("quit", function() std.Sys.exit(0));
+        if ( quitFunction == null)
+        {
+            quitFunction = function() Sys.exit(0);
+        }
+        commands.set("exit", quitFunction);
+        commands.set("quit", quitFunction);
 
         if( useDebug ) Sys.println(this.debug());
         if( paths!=null ) for( path in paths ) {

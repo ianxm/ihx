@@ -5,8 +5,8 @@
   "tags": ["neko","shell","interactive","cli","tool","run"],
   "description": "ihx is an interactive haxe scripting shell",
   "contributors": ["ianxm"],
-  "releasenote": "removed dependency on neko.Lib",
-  "version": "0.3.6",
+  "releasenote": "save command history to file",
+  "version": "0.3.7",
   "url": "http://github.com/ianxm/ihx",
   "dependencies": {
     "hx3compat": ""
