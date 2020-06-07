@@ -50,13 +50,12 @@ class ConsoleReader
     private var code :Int;
     private var history :History;
     private var codeSet :CodeSet;
-    private var stdout :Output = Sys.stdout();
 
     public static function main()
     {
         var cr = new ConsoleReader();
         var cmdStr = cr.readLine();
-        Sys.stdout().writeString("\n" + cmdStr + "\n");
+        Sys.println("\n" + cmdStr);
     }
 
     public function new(maxHistory=-1, historyFile="")
@@ -91,7 +90,7 @@ class ConsoleReader
         {
             var clearPrevCommand = cmd.clearString();
             code = Sys.getChar(false);
-            // stdout.writeString("\ngot: " + code +"\n");
+            // Sys.println("\ngot: " + code);
             if( code == codeSet.arrow ) // arrow keys
             {
                 if( std.Sys.systemName() != "Windows" )
@@ -119,12 +118,12 @@ class ConsoleReader
                     }
                     else
                     {
-                        stdout.writeString("\n");
+                        Sys.println("");
                         history.save();
                         std.Sys.exit(1);
                     }
                 case _ if(code == codeSet.enter):
-                    stdout.writeString("\n");
+                    Sys.println("");
                     history.add(cmd.toString());
                     return cmd.toString();
                 case _ if(code == codeSet.ctrld):
@@ -134,7 +133,7 @@ class ConsoleReader
                     }
                     else
                     {
-                        stdout.writeString("\n");
+                        Sys.println("");
                         history.save();
                         std.Sys.exit(1);
                     }
@@ -151,8 +150,8 @@ class ConsoleReader
                 case _ if( code>=32 && code<=126 ): cmd.addChar(String.fromCharCode(code));
                 }
             }
-            stdout.writeString(clearPrevCommand);
-            stdout.writeString(cmd.toConsole());
+            Sys.print(clearPrevCommand);
+            Sys.print(cmd.toConsole());
         }
         return "";
     }

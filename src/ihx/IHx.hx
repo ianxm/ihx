@@ -20,6 +20,7 @@ import sys.io.FileInput;
 import haxe.io.Output;
 import sys.FileSystem;
 import ihx.CmdProcessor;
+import ihx.EvalEngine;
 
 /**
    ihx is an interactive session for haxe programming.  It builds
@@ -27,13 +28,10 @@ import ihx.CmdProcessor;
 **/
 class IHx
 {
-    private static var VERSION = "0.3.7";
+    private static var VERSION = "0.4.0";
 
     /** the source for commands **/
     private var console :ConsoleReader;
-
-    /** stdout stream */
-    private var stdout :Output = Sys.stdout();
 
     /**
        whether to run minimal interpretor, e.g. Codi.
@@ -69,6 +67,7 @@ class IHx
     **/
     public function run()
     {
+        var mode = EvalMode.interp;
         var debug = false;
         var paths:Set<String> = [];
         var libs:Set<String> = [];
@@ -83,6 +82,10 @@ class IHx
         {
             var arg = args.shift();
             switch ( arg ) {
+                case "-neko":
+                    mode = EvalMode.neko;
+                case "-hl":
+                    mode = EvalMode.hashlink;
                 case "-debug":
                     debug = true;
                 case "-cp":
@@ -100,24 +103,25 @@ class IHx
                 case "-hist-max":
                     maxHistory = Std.parseInt(args.shift());
                 case _:
-                    stdout.writeString('Unknown argument "$arg"\n');
-                    stdout.writeString("Usage: neko ihx [-debug] [-cp /class/path/] [-lib ihx:0.3.0] [-D some_define] [-codi] [-hist-file file] [-hist-max max] [workingdir]\n");
+                    Sys.println('Unknown argument "$arg"');
+                    Sys.println("Usage: neko ihx [-debug] [-cp /class/path/] [-lib ihx:0.3.0] [-D some_define] [-codi] [-hist-file file] [-hist-max max] [workingdir]");
                     Sys.exit(1);
             }
         }
         console = new ConsoleReader(maxHistory, historyFile);
 
-        stdout.writeString("haxe interactive shell v" + VERSION + "\n");
-        stdout.writeString("type \"help\" for help\n");
-        if (useCodi) stdout.writeString("Launched with -codi\n");
+        Sys.println("haxe interactive shell v" + VERSION);
+        Sys.println('running in $mode mode');
+        Sys.println("type \"help\" for help");
+        if (useCodi) Sys.println("Launched with -codi");
 
-        var processor = new CmdProcessor(quit,debug,paths,libs,defines);
+        var processor = new CmdProcessor(mode, quit, debug, paths, libs, defines);
 
         while( true )
         {
             // initial prompt
             console.cmd.prompt = ">> ";
-            stdout.writeString(">> ");
+            Sys.print(">> ");
 
             if (!useCodi)
             {
@@ -127,7 +131,7 @@ class IHx
                     {
                         var ret = processor.process(console.readLine());
                         if( ret != null )
-                            stdout.writeString(ret+"\n");
+                            Sys.println(ret);
                     }
                     catch (ex:CmdError)
                     {
@@ -136,16 +140,16 @@ class IHx
                         case IncompleteStatement:
                             {
                                 console.cmd.prompt = ".. "; // continue prompt
-                                stdout.writeString(".. ");
+                                Sys.print(".. ");
                                 continue;
                             }
-                        case InvalidStatement(msg): stdout.writeString(msg + "\n");
+                        case InvalidStatement(msg): Sys.println(msg);
                         }
                     }
 
                     // restart after an error or completed command
                     console.cmd.prompt = ">> ";
-                    stdout.writeString(">> ");
+                    Sys.print("\n>> ");
                 }
             }
             else
@@ -154,17 +158,17 @@ class IHx
                 // a more conventional interpreter, hence following
                 // implementation (launched with "haxelib run ihx -codi")
                 while (true) {
-                    stdout.writeString(">> ");
+                    Sys.print(">> ");
                     var line = Sys.stdin().readLine();
-                    stdout.writeString(line + "\n");
+                    Sys.println(line);
                     if (line == "exit") break;
                     else if (StringTools.trim(line) == "") continue;
                     else {
                         try {
                             var ret = processor.process(line);
-                            if (ret != null) stdout.writeString(ret + "\n");
+                            if (ret != null) Sys.println(ret);
                         }
-                        catch (ex:CmdError) { stdout.writeString("Bollocks\n"); }
+                        catch (ex:CmdError) { Sys.println("Bollocks"); }
                     }
                 }
             }

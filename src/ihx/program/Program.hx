@@ -138,11 +138,10 @@ class Program
         var sb = new StringBuf();
 
         if( includeHelpers ) {
-            sb.add("import haxe.macro.Expr;\n"); 
-            sb.add("import haxe.macro.Context;\n"); 
+            sb.add("import haxe.macro.Expr;\n");
+            sb.add("import haxe.macro.Context;\n");
         }
         sb.add("#if !macro \n");                            // separate macro code from runtime code to avoid "You cannot use @:build inside a macro" error
-        sb.add("import neko.Lib;\n");                       // imports
         for( ii in imports )
             sb.add(ii.toString() +"\n");
 
@@ -164,7 +163,7 @@ class Program
         for( ii in commands )                               // old commands
         {
             if( ii.isNew )
-                sb.add("        Lib.println('"+separator+"');\n");
+                sb.add("        Sys.println('"+separator+"\n');");
             sb.add("        "+ ii.toString() +"\n");
         }
 

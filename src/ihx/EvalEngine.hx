@@ -24,21 +24,30 @@ import sys.FileSystem;
 import ihx.program.Program;
 import ihx.Set;
 
-class NekoEval
+enum EvalMode
+{
+    interp;
+    neko;
+    hashlink;
+}
+
+class EvalEngine
 {
     public var debug :Bool;
     public var classpath(default,null) :Set<String>;
     public var libs(default,null) :Set<String>;
     public var defines(default,null) :Set<String>;
     public var tmpSuffix(default,null) :String;
+    private var evalMode :EvalMode;
     private var errRegex :EReg;
     private var tmpDir :String;
     private var tmpHxFname :String;
     private var tmpHxPath :String;
-    private var tmpNekoPath :String;
+    private var tmpBuildPath :String;
 
-    public function new()
+    public function new(mode)
     {
+        this.evalMode = mode;
         debug = false;
         classpath = [];
         libs = [];
@@ -48,12 +57,20 @@ class NekoEval
         tmpSuffix = StringTools.lpad(Std.string(Std.random(9999)), "0", 4);
         tmpHxFname = "IhxProgram_"+ tmpSuffix +".hx";
         tmpHxPath = tmpDir +"/" + tmpHxFname;
-        tmpNekoPath = tmpDir +"/ihx_out_"+ tmpSuffix +".n";
+        tmpBuildPath = switch evalMode {
+            case neko: tmpDir +"/ihx_out_"+ tmpSuffix +".n";
+            case hashlink: tmpDir +"/ihx_out_"+ tmpSuffix +".hl";
+            default: null;
+        }
     }
 
     public function getArgs()
     {
-        var args = ["-neko", tmpNekoPath, "-cp", tmpDir, "-main", tmpHxFname, "-cmd", "neko "+tmpNekoPath];
+        var args = switch evalMode {
+            case neko: ["-neko", tmpBuildPath, "-cp", tmpDir, "-main", tmpHxFname, "-cmd", "neko "+tmpBuildPath];
+            case hashlink: ["-hl", tmpBuildPath, "-cp", tmpDir, "-main", tmpHxFname, "-cmd", "hl "+tmpBuildPath];
+            default: ["--interp", "-cp", tmpDir, "-main", tmpHxFname];
+        }
 
         if(debug) args.push('-debug');
         for(i in libs)
@@ -117,8 +134,8 @@ class NekoEval
 
         if( FileSystem.exists(tmpHxPath) )
             FileSystem.deleteFile(tmpHxPath);
-        if( FileSystem.exists(tmpNekoPath) )
-            FileSystem.deleteFile(tmpNekoPath);
+        if( tmpBuildPath != null && FileSystem.exists(tmpBuildPath) )
+            FileSystem.deleteFile(tmpBuildPath);
 
         if( proc.exitCode()!=0 )
             throw ret;

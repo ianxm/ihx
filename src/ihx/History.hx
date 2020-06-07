@@ -32,7 +32,7 @@ class History
         // and should not count against the command history limit.
         this.maxCommands = maxCommands + 1;
         this.saveFile = saveFile;
-        if ( saveFile.length > 0 ) 
+        if ( saveFile.length > 0 )
         {
             load();
         }
@@ -56,7 +56,7 @@ class History
             commands.insert(0, "");
         }
         catch ( err: Dynamic ) {
-            Sys.stdout().writeString('Warning! Failed to read history from $saveFile: $err\n');
+            Sys.println('Warning! Failed to read history from $saveFile: $err');
             commands = [""];
         }
         if ( isFull() )
@@ -76,8 +76,8 @@ class History
             }
             catch ( err: Dynamic )
             {
-                Sys.stdout().writeString('Warning! Failed to write history to $saveFile: $err\n');
-                
+                Sys.println('Warning! Failed to write history to $saveFile: $err');
+
                 // Don't try saving the history more than once
                 saveFile = "";
             }
@@ -91,7 +91,7 @@ class History
     public function add(cmd)
     {
         commands.push(cmd);
-        if ( isFull() ) 
+        if ( isFull() )
         {
             // Drop the oldest command to save the newest one
             commands.shift();

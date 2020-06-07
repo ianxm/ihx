@@ -21,6 +21,7 @@ using StringTools;
 import sys.FileSystem;
 import haxe.ds.StringMap;
 import ihx.program.Program;
+import ihx.EvalEngine;
 
 enum CmdError
 {
@@ -36,8 +37,8 @@ class CmdProcessor
     /** hash connecting interpreter commands to the functions that implement them */
     private var commands : StringMap<Dynamic>;
 
-    /** runs haxe compiler and neko vm */
-    private var nekoEval :NekoEval;
+    /** runs haxe compiler and vm if needed */
+    private var evalEngine :EvalEngine;
 
     /** controls temp program text */
     private var program :Program;
@@ -45,13 +46,10 @@ class CmdProcessor
     /** name of new lib to include in build */
     private var cmdStr :String;
 
-    /** check for newline at the end of the string */
-    private var endNewline = ~/\n$/;
-
-    public function new( ?quitFunction: Void -> Void, ?useDebug=false, ?paths:Set<String>, ?libs:Set<String>, ?defines:Set<String> )
+    public function new(mode:EvalMode, ?quitFunction:Void->Void, ?useDebug=false, ?paths:Set<String>, ?libs:Set<String>, ?defines:Set<String> )
     {
-        nekoEval = new NekoEval();
-        program = new Program(nekoEval.tmpSuffix);
+        evalEngine = new EvalEngine(mode);
+        program = new Program(evalEngine.tmpSuffix);
         sb = new StringBuf();
         commands = new StringMap<Void->String>();
         commands.set("dir", listVars);
@@ -109,19 +107,33 @@ class CmdProcessor
             else                                            // execute a haxe statement
             {
                 program.addStatement(cmdStr);
-                ret = nekoEval.evaluate(program.getProgram());
+                ret = evalEngine.evaluate(program.getProgram());
                 program.acceptLastCmd(true);
             }
         }
-        catch (ex :String)
+        catch( ex :String )
         {
             program.acceptLastCmd(false);
             sb = new StringBuf();
-            throw InvalidStatement(ex);
+            // trace("bad: " + ex + ".");
+            throw InvalidStatement(stripNewlines(ex));
         }
 
         sb = new StringBuf();
-        return (ret==null) ? null : Std.string(endNewline.replace(ret, ""));
+        return if( ret==null || ret.length==0)
+            null;
+        else
+            stripNewlines(ret);
+    }
+
+    /**
+        remove newlines from the start and end of neko and hashlink responses
+    **/
+    private function stripNewlines(str :String) :String
+    {
+        str = ~/^\n*/.replace(str, "");
+        str = ~/\n*$/.replace(str, "");
+        return str;
     }
 
     private function firstWord(str :String) :String
@@ -148,8 +160,8 @@ class CmdProcessor
     **/
     private function debug() :String
     {
-        nekoEval.debug = !nekoEval.debug;
-        return nekoEval.debug ? "debug mode on" : "debug mode off";
+        evalEngine.debug = !evalEngine.debug;
+        return evalEngine.debug ? "debug mode on" : "debug mode off";
     }
 
     /**
@@ -171,7 +183,7 @@ class CmdProcessor
         if( ! FileSystem.exists(name) )
             return "path not found: " + name;
         var path = FileSystem.fullPath(name);
-        nekoEval.classpath.add(path);
+        evalEngine.classpath.add(path);
         return "added path: " + path;
     }
 
@@ -186,7 +198,7 @@ class CmdProcessor
         if( ! FileSystem.exists(name) )
             return "path not found: " + name;
         var path = FileSystem.fullPath(name);
-        var removed = nekoEval.classpath.remove( path );
+        var removed = evalEngine.classpath.remove( path );
         return if( removed )
             "removed path: " + path;
         else
@@ -198,9 +210,9 @@ class CmdProcessor
     **/
     private function listPath() :String
     {
-        if( nekoEval.classpath.length == 0 )
+        if( evalEngine.classpath.length == 0 )
             return "path: (empty)";
-        return "path: " + wordWrap(nekoEval.classpath.join(", "));
+        return "path: " + wordWrap(evalEngine.classpath.join(", "));
     }
 
     /**
@@ -223,7 +235,7 @@ class CmdProcessor
         var haxelibName = name.split(":")[0];
         if( 0 != new sys.io.Process("haxelib", ["path",haxelibName]).exitCode() )
             return 'haxelib `$haxelibName` could not be loaded';
-        nekoEval.libs.add(name);
+        evalEngine.libs.add(name);
         return "added lib: " + name;
     }
 
@@ -235,7 +247,7 @@ class CmdProcessor
         var name = cmdStr.split(" ")[1];
         if( name == null || name.length==0 )
             return "syntax error";
-        nekoEval.libs.remove(name);
+        evalEngine.libs.remove(name);
         return "removed lib: " + name;
     }
 
@@ -244,9 +256,9 @@ class CmdProcessor
     **/
     private function listLibs() :String
     {
-        if( nekoEval.libs.length == 0 )
+        if( evalEngine.libs.length == 0 )
             return "libs: (none)";
-        return "libs: " + wordWrap(nekoEval.libs.join(", "));
+        return "libs: " + wordWrap(evalEngine.libs.join(", "));
     }
 
 
@@ -267,7 +279,7 @@ class CmdProcessor
     **/
     private function doAddDefine( name:String ) :String
     {
-        nekoEval.defines.add(name);
+        evalEngine.defines.add(name);
         return "added define: " + name;
     }
 
@@ -279,7 +291,7 @@ class CmdProcessor
         var name = cmdStr.split(" ")[1];
         if( name == null || name.length==0 )
             return "syntax error";
-        nekoEval.defines.remove(name);
+        evalEngine.defines.remove(name);
         return "removed define: " + name;
     }
 
@@ -288,9 +300,9 @@ class CmdProcessor
     **/
     private function listDefines() :String
     {
-        if( nekoEval.defines.length == 0 )
+        if( evalEngine.defines.length == 0 )
             return "defines: (none)";
-        return "defines: " + wordWrap(nekoEval.defines.join(", "));
+        return "defines: " + wordWrap(evalEngine.defines.join(", "));
     }
 
     /**
@@ -298,7 +310,7 @@ class CmdProcessor
     **/
     private function clearVars() :String
     {
-        program = new Program(nekoEval.tmpSuffix);
+        program = new Program(evalEngine.tmpSuffix);
         return "cleared";
     }
 
@@ -309,7 +321,7 @@ class CmdProcessor
     {
         var sb = new StringBuf();
         sb.add("Compilation:\n");
-        sb.add("  haxe " + nekoEval.getArgs().join(" ") + "\n");
+        sb.add("  haxe " + evalEngine.getArgs().join(" ") + "\n");
         sb.add("Program:\n");
 
         var lines = program.getProgram(false).split("\n");

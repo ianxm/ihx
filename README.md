@@ -5,8 +5,8 @@ overview
 --------
 
 ihx is an interactive haxe shell.  each statement entered is run
-through the haxe compiler and neko interpreter, and the return value
-is displayed.
+through the haxe compiler, then possibly an interpreter, then the
+return value is displayed.
 
 
 installation
@@ -20,19 +20,31 @@ ihx can be installed and run through haxelib with the commands:
 
 alternatively, an executable can be obtained either through the
 project repository or by making it from the "run.n" file included in
-the haxelib distribution.
+the haxelib distribution.  ihx accepts the following command line
+options:
+
+- `-neko`             target neko vm (default is interp)
+- `-hl`               target hashlink vm (default is interp)
+- `-debug`            enable debug mode
+- `-cp [path]`        add `path` to the classpath
+- `-lib [name]`       add a haxelib library
+- `-D [name]`         add a define
+- `-codi`             use simplified console reader for use with codi
+- `-hist-file [name]` save command history to this file (default don't save history)
+- `-hist-max [num]`   save up to `num` commands in the history file (default 50)
 
 
-neko in the background
-----------------------
+differences from standard haxe
+------------------------------
 
-while the system's standard haxe and neko executables are being used,
-not all valid haxe statements will work in ihx.
+while the system's standard haxe/neko/hashlink executables are being
+used, not all valid haxe statements will work in ihx.
 
 - only one var can be declared per line (no 'var a,b,c;')
 
 - omitting the semicolon at the end of a statement prints the return
-  value to the console
+  value to the console (but the semicolon is required if the statement
+  has return type Void)
 
 - multiple statements on a line are allowed, but the trailing
   semicolon is required (no 'var a=1; var b=2')
@@ -101,7 +113,8 @@ it can be cleared with the `clear` command.
 usage
 -----
 
-the ihx shell accepts the following commands:
+in addition to haxe statements, the ihx shell accepts the following
+commands:
 
 - `dir`               list all currently defined variables
 - `addpath [name]`    add a dir to the classpath
@@ -137,46 +150,46 @@ example
 
 the following is an example of an ihx session:
 
-    haxe interactive shell v0.3.0
+    haxe interactive shell v0.4.0
+    running in interp mode
     type "help" for help
     >> var a=1
     Int : 1
 
-    >> var b = 2;                       <-- suppress output with trailing semicolon
+    >> var b = 2;                        <-- suppress output with trailing semicolon
 
     >> var c=a+b
     Int : 3
 
     >> Math.sin(c)
-    Float : 0.1411200081
+    Float : 0.141120008059867214
 
     >> var str = 'this is a string'
     String : this is a string
 
     >> var str2='multi-line\nstring'
+
     String : multi-line
     string
 
-    >> var str3='multi-line ' \         <-- line continuation with '\'
+    >> var str3='multi-line ' \          <-- line continuation with '\'
     .. + 'command'
     String : multi-line command
 
-    >> dir                              <-- get list of variables in the session
+    >> dir                               <-- get list of variables in the session
     vars: a, b, c, str, str2, str3
 
     >> var arr = [1,4,2,5,1]
     Array<Int> : [1,4,2,5,1]
 
-    >> arr.sort(Reflect.compare)
-    Void : null                                <-- sort's return type is void
+    >> arr.sort(Reflect.compare);        <-- must suppress output because sort's return type is Void
 
     >> arr
     Array<Int> : [1,1,2,4,5]
 
     >> var timestwo = function(ii) { return ii*2; }
-    Int -> Int : #function:1
-
-    >> using Lambda;                    <-- 'using' and 'import' work as expected
+    Int -> Int : #fun
+    >> using Lambda;                     <-- 'using' and 'import' work as expected
 
     >> arr.map(timestwo)
     Array<Int> : [2,2,4,8,10]
@@ -189,31 +202,29 @@ the following is an example of an ihx session:
     >> nameRe.matched(1)
     String : charlie
 
-    >> var d = { one: 1, two: "two" }   <-- anonymous objects work as expected
-    { var two : String; var one : Int; } : { one => 1, two => two }
+    >> var d = { one: 1, two: "two" }    <-- anonymous objects work as expected
+    { var two : String; var one : Int; } : {one: 1, two: two}
 
-    >> haxe.Json.stringify(d)           <-- standard library call without import
+    >> haxe.Json.stringify(d)            <-- standard library call without import
     String : {"one":1,"two":"two"}
 
-    >> enum Color {\                    <-- enums and typedefs work as expected
+    >> enum Color {\                     <-- enums and typedefs work as expected
     .. RED;\
     .. BLACK;\
     .. }
 
-    >> typedef Car = { color:Color, name:String }
+    >> typedef Car = { color :Color, name :String }
 
     >> var car = { color: RED, name: "gus" }
-    { var name : String; var color : IhxProgram_1515.Color; } : { name => gus, color => RED }
+    { var name : String; var color : IhxProgram_5836.Color; } : {name: gus, color: RED}
 
     >> addlib random                     <-- add a haxelib library to the session
-    added: random
+    added lib: random
 
-    >> libs                             <-- list haxelib libraries that have been added
+    >> libs                              <-- list haxelib libraries that have been added
     libs: random
 
-    >> var s = Random.int(0,100);
-    Int : 48
+    >> var s = Random.int(0, 100)
+    Int : 89
 
-    >> quit                              <-- you can also use Ctrl-C (once to clear the line, again to exit)
-
-
+    >> quit                              <-- or 'exit' or Ctrl-C or Ctrl-D
