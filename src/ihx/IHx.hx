@@ -86,6 +86,8 @@ class IHx
                     mode = EvalMode.neko;
                 case "-hl":
                     mode = EvalMode.hashlink;
+                case "-python":
+                    mode = EvalMode.python;
                 case "-debug":
                     debug = true;
                 case "-cp":
