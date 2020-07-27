@@ -61,6 +61,7 @@ class EvalEngine
         tmpBuildPath = switch evalMode {
             case neko: tmpDir +"/ihx_out_"+ tmpSuffix +".n";
             case hashlink: tmpDir +"/ihx_out_"+ tmpSuffix +".hl";
+            case python: tmpDir +"/ihx_out_"+ tmpSuffix +".py";
             default: null;
         }
     }
