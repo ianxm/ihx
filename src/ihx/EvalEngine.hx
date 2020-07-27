@@ -29,6 +29,7 @@ enum EvalMode
     interp;
     neko;
     hashlink;
+    python;
 }
 
 class EvalEngine
@@ -60,6 +61,7 @@ class EvalEngine
         tmpBuildPath = switch evalMode {
             case neko: tmpDir +"/ihx_out_"+ tmpSuffix +".n";
             case hashlink: tmpDir +"/ihx_out_"+ tmpSuffix +".hl";
+            case python: tmpDir +"/ihx_out_"+ tmpSuffix +".py";
             default: null;
         }
     }
@@ -69,6 +71,7 @@ class EvalEngine
         var args = switch evalMode {
             case neko: ["-neko", tmpBuildPath, "-cp", tmpDir, "-main", tmpHxFname, "-cmd", "neko "+tmpBuildPath];
             case hashlink: ["-hl", tmpBuildPath, "-cp", tmpDir, "-main", tmpHxFname, "-cmd", "hl "+tmpBuildPath];
+            case python: ["-python", tmpBuildPath, "-cp", tmpDir, "-main", tmpHxFname, "-cmd", "python "+tmpBuildPath];
             default: ["--interp", "-cp", tmpDir, "-main", tmpHxFname];
         }
 
