@@ -29,6 +29,7 @@ enum EvalMode
     interp;
     neko;
     hashlink;
+    nodejs;
 }
 
 class EvalEngine
@@ -69,6 +70,7 @@ class EvalEngine
         var args = switch evalMode {
             case neko: ["-neko", tmpBuildPath, "-cp", tmpDir, "-main", tmpHxFname, "-cmd", "neko "+tmpBuildPath];
             case hashlink: ["-hl", tmpBuildPath, "-cp", tmpDir, "-main", tmpHxFname, "-cmd", "hl "+tmpBuildPath];
+            case nodejs: ["-js", tmpBuildPath, "-cp", tmpDir, "-main", tmpHxFname, "-cmd", "node "+tmpBuildPath];
             default: ["--interp", "-cp", tmpDir, "-main", tmpHxFname];
         }
 

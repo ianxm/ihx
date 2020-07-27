@@ -86,6 +86,8 @@ class IHx
                     mode = EvalMode.neko;
                 case "-hl":
                     mode = EvalMode.hashlink;
+                case "-js" | "-nodejs":
+                    mode = EvalMode.nodejs;
                 case "-debug":
                     debug = true;
                 case "-cp":
