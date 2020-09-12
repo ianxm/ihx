@@ -77,7 +77,6 @@ class IHx
         var historyFile = "";
 
         var args = Sys.args();
-        if (args.length > 0 && Sys.systemName() == "Windows") args.shift();
         while( args.length > 0 )
         {
             var arg = args.shift();
