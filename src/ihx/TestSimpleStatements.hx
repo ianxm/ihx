@@ -17,19 +17,20 @@
 package ihx;
 
 import ihx.CmdProcessor;
+import ihx.EvalEngine;
 
 class TestSimpleStatements extends haxe.unit.TestCase
 {
     public function testSetVar()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("var a=1");
         assertEquals("Int : 1", ret);
     }
 
     public function testSuppressedOutput()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("var a=1;");
         assertEquals("", ret);
         ret = proc.process("a");
@@ -38,7 +39,7 @@ class TestSimpleStatements extends haxe.unit.TestCase
 
     public function testCompute()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("var a=1;");
         ret = proc.process("var b=2;");
         ret = proc.process("var c=a+b");
@@ -47,14 +48,14 @@ class TestSimpleStatements extends haxe.unit.TestCase
 
     public function testString()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("var a='one'");
         assertEquals("String : one", ret);
     }
 
     public function testVariablePersistence()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("var a='one'");
         assertEquals("String : one", ret);
         ret = proc.process("var b='two'");
@@ -65,7 +66,7 @@ class TestSimpleStatements extends haxe.unit.TestCase
 
     public function testFunction()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("var f=function(ii) { return ii*2; }");
         assertEquals("Int -> Int : #function:1", ret);
         ret = proc.process("f(4)");

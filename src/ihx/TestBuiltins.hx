@@ -17,12 +17,13 @@
 package ihx;
 
 import ihx.CmdProcessor;
+import ihx.EvalEngine;
 
 class TestBuiltins extends haxe.unit.TestCase
 {
     public function testImport()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("import haxe.crypto.Md5");
         ret = proc.process("Md5.encode('hello')");
         assertEquals("String : 5d41402abc4b2a76b9719d911017c592", ret);
@@ -30,7 +31,7 @@ class TestBuiltins extends haxe.unit.TestCase
 
     public function testWildcardImport()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("import haxe.ds.*");
         ret = proc.process("new IntMap<String>()");
         assertEquals("haxe.ds.IntMap<String> : {}", ret);
@@ -40,7 +41,7 @@ class TestBuiltins extends haxe.unit.TestCase
 
     public function testImportStatic()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("import haxe.crypto.Md5.*");
         ret = proc.process("encode('hello')");
         assertEquals("String : 5d41402abc4b2a76b9719d911017c592", ret);
@@ -48,7 +49,7 @@ class TestBuiltins extends haxe.unit.TestCase
 
     public function testArray()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("var a=[1,3,2]");
         assertEquals("Array<Int> : [1,3,2]", ret);
         ret = proc.process("a.length");
@@ -62,7 +63,7 @@ class TestBuiltins extends haxe.unit.TestCase
 
     public function testArrayComprehension()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("var a=[ for(i in 0...10) if (i%2 == 0) i ]");
         assertEquals("Array<Int> : [0,2,4,6,8]", ret);
         ret = proc.process("a.length");
@@ -71,7 +72,7 @@ class TestBuiltins extends haxe.unit.TestCase
 
     public function testDate()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("var a=new Date(2008, 1, 2, 3, 4, 5)");
         assertEquals("Date : 2008-02-02 03:04:05", ret);
         ret = proc.process("a.getDate()");
@@ -84,7 +85,7 @@ class TestBuiltins extends haxe.unit.TestCase
 
     public function testDateTools()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("DateTools.days(60)");
         assertEquals("Float : 5184000000", ret);
         ret = proc.process("var a=new Date(2008, 1, 2, 3, 4, 5)");
@@ -95,7 +96,7 @@ class TestBuiltins extends haxe.unit.TestCase
 
     public function testEReg()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("var re=new EReg('word(.)','');");
         ret = proc.process("re.match('word7')");
         assertEquals("Bool : true", ret);
@@ -105,7 +106,7 @@ class TestBuiltins extends haxe.unit.TestCase
 
     public function testERegCaseInsensitive()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("var re=new EReg('word(.)','i')");
         ret = proc.process("re.match('WORD7')");
         assertEquals("Bool : true", ret);
@@ -115,7 +116,7 @@ class TestBuiltins extends haxe.unit.TestCase
 
     public function testERegShortcut()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("var re = ~/word(.)/");
         ret = proc.process("re.match('word7')");
         assertEquals("Bool : true", ret);
@@ -125,7 +126,7 @@ class TestBuiltins extends haxe.unit.TestCase
 
     public function testERegShortcutCaseInsensitive()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("var re = ~/word(.)/i");
         ret = proc.process("re.match('WORD7')");
         assertEquals("Bool : true", ret);
@@ -135,7 +136,7 @@ class TestBuiltins extends haxe.unit.TestCase
 
     public function testMap()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("var a=new Map<String,Int>()");
         assertEquals("haxe.ds.Map<String, Int> : {}", ret);
 
@@ -156,7 +157,7 @@ class TestBuiltins extends haxe.unit.TestCase
 
     public function testMapSyntaxSugar()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("var a=[ 'one'=>1, 'two'=>2 ]");
         assertEquals("haxe.ds.Map<String, Int> : {one => 1, two => 2}", ret);
 
@@ -166,7 +167,7 @@ class TestBuiltins extends haxe.unit.TestCase
 
     public function testStringMap()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("import haxe.ds.StringMap");
         ret = proc.process("var a=new StringMap()");
         assertEquals("Unknown<0> : {}", ret);
@@ -188,7 +189,7 @@ class TestBuiltins extends haxe.unit.TestCase
 
     public function testLambda()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("var a=[1,3,5,6,3]");
         assertEquals("Array<Int> : [1,3,5,6,3]", ret);
         ret = proc.process("var f=function(ii) { return ii*3; }");
@@ -201,7 +202,7 @@ class TestBuiltins extends haxe.unit.TestCase
 
     public function testList()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("var a=new List()");
         assertEquals("Unknown<0> : {}", ret);
 
@@ -222,7 +223,7 @@ class TestBuiltins extends haxe.unit.TestCase
 
     public function testMath()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("Math.sin(1)");
         assertEquals("Float : 0.841470984807897", ret);
         ret = proc.process("Math.abs(-2.4)");
@@ -235,7 +236,7 @@ class TestBuiltins extends haxe.unit.TestCase
 
     public function testReflect()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("var a='a string'");
         assertEquals("String : a string", ret);
         ret = proc.process("Reflect.fields(a)");
@@ -246,7 +247,7 @@ class TestBuiltins extends haxe.unit.TestCase
 
     public function testStd()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("var a='a string'");
         assertEquals("String : a string", ret);
         ret = proc.process("Std.is(a,String)");
@@ -257,7 +258,7 @@ class TestBuiltins extends haxe.unit.TestCase
 
     public function testString()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("var a='a string'");
         assertEquals("String : a string", ret);
         ret = proc.process("a.charAt(2)");
@@ -270,7 +271,7 @@ class TestBuiltins extends haxe.unit.TestCase
 
     public function testStringBuf()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("var a=new StringBuf()");
         assertEquals("StringBuf : ", ret);
         ret = proc.process("a.add('one')");
@@ -283,7 +284,7 @@ class TestBuiltins extends haxe.unit.TestCase
 
     public function testStringTools()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("var a=' a string '");
         assertEquals("String :  a string ", ret);
         ret = proc.process("a = StringTools.trim(a)");
@@ -296,7 +297,7 @@ class TestBuiltins extends haxe.unit.TestCase
 
     public function testType()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("var a='a string'");
         assertEquals("String : a string", ret);
         ret = proc.process("Type.getClassName(Type.getClass(a))");
@@ -307,7 +308,7 @@ class TestBuiltins extends haxe.unit.TestCase
 
     public function testXml()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("var a=Xml.parse('<one att=\"1\">word</one>')");
         assertEquals("Xml : <one att=\"1\">word</one>", ret);
         ret = proc.process("a.firstElement().firstChild()");
@@ -318,21 +319,21 @@ class TestBuiltins extends haxe.unit.TestCase
 
     public function testHaxeMd5()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("var a=haxe.crypto.Md5.encode('a string')");
         assertEquals("String : 3a315533c0f34762e0c45e3d4e9d525c", ret);
     }
 
     public function testHaxeSerializer()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("var a=haxe.Serializer.run('a string')");
         assertEquals("String : y10:a%20string", ret);
     }
 
     public function testHaxeUnserializer()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("var a=haxe.Unserializer.run('y10:a%20string')");
         assertEquals("Unknown<0> : a string", ret);
     }

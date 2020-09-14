@@ -17,12 +17,13 @@
 package ihx;
 
 import ihx.CmdProcessor;
+import ihx.EvalEngine;
 
 class TestCommands extends haxe.unit.TestCase
 {
     public function testDir()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("var a='one'");
         assertEquals("String : one", ret);
         ret = proc.process("var b='two'");
@@ -33,7 +34,7 @@ class TestCommands extends haxe.unit.TestCase
 
     public function testHelp()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("help");
         var ans = CmdProcessor.printHelp();
         assertEquals(ans, ret);
@@ -41,7 +42,7 @@ class TestCommands extends haxe.unit.TestCase
 
     public function testClear()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("var a='one'");
         assertEquals("String : one", ret);
         ret = proc.process("var b='two'");
@@ -53,21 +54,20 @@ class TestCommands extends haxe.unit.TestCase
 
     public function testPrint()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("var a=0");
         var ret = proc.process("print");
         assertEquals("Compilation:", ret.split("\n")[0] );
         assertEquals("  haxe -neko ", ret.split("\n")[1].substr(0,13) );
         assertEquals("Program:", ret.split("\n")[2] );
         assertEquals("   1: #if !macro ", ret.split("\n")[3] );
-        assertEquals("   2: import neko.Lib;", ret.split("\n")[4] );
-        assertEquals("   7:         var a;", ret.split("\n")[9] );
-        assertEquals("   9:         a = 0;", ret.split("\n")[11] );
+        assertEquals("   6:         var a;", ret.split("\n")[8] );
+        assertEquals("   8:         a = 0;", ret.split("\n")[10] );
     }
 
     public function testLibs()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("libs");
         assertEquals("libs: (none)", ret);
 
@@ -86,7 +86,7 @@ class TestCommands extends haxe.unit.TestCase
 
     public function testPaths()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("path");
         assertEquals("path: (empty)", ret);
 
@@ -108,7 +108,7 @@ class TestCommands extends haxe.unit.TestCase
 
     public function testDefines()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("defines");
         assertEquals("defines: (none)", ret);
 
@@ -129,7 +129,7 @@ class TestCommands extends haxe.unit.TestCase
 
     public function testDebug()
     {
-        var proc = new CmdProcessor();
+        var proc = new CmdProcessor(EvalMode.neko);
         var ret = proc.process("debug");
         assertEquals("debug mode on", ret);
 
@@ -148,7 +148,7 @@ class TestCommands extends haxe.unit.TestCase
         var srcFullPath = sys.FileSystem.fullPath("src");
         var binFullPath = sys.FileSystem.fullPath("bin");
 
-        var proc = new CmdProcessor( true, ["src","bin"], ["ihx"], ["ABC","DEF"] );
+        var proc = new CmdProcessor( EvalMode.neko, true, ["src","bin"], ["ihx"], ["ABC","DEF"] );
         var ret = proc.process("path");
         assertEquals('path: $srcFullPath, $binFullPath', ret);
         ret = proc.process("libs");
