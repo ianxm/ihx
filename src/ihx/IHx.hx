@@ -87,6 +87,8 @@ class IHx
                     mode = EvalMode.hashlink;
                 case "-python":
                     mode = EvalMode.python;
+                case "-python3":
+                    mode = EvalMode.python3;
                 case "-debug":
                     debug = true;
                 case "-cp":
@@ -105,7 +107,7 @@ class IHx
                     maxHistory = Std.parseInt(args.shift());
                 case _:
                     Sys.println('Unknown argument "$arg"');
-                    Sys.println("Usage: neko ihx [-neko|-hl|-python] [-debug] [-cp /class/path/] [-lib ihx:0.3.0] [-D some_define] [-codi] [-hist-file file] [-hist-max max] [workingdir]");
+                    Sys.println("Usage: neko ihx [-neko|-hl|-python|-python3] [-debug] [-cp /class/path/] [-lib ihx:0.3.0] [-D some_define] [-codi] [-hist-file file] [-hist-max max] [workingdir]");
                     Sys.exit(1);
             }
         }

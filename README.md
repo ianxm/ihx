@@ -25,6 +25,8 @@ options:
 
 - `-neko`             target neko vm (default is interp)
 - `-hl`               target hashlink vm (default is interp)
+- `-python`           target python3 (default is interp)
+- `-python3`          target python3 (default is interp)
 - `-debug`            enable debug mode
 - `-cp [path]`        add `path` to the classpath
 - `-lib [name]`       add a haxelib library

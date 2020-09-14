@@ -46,7 +46,7 @@ class CmdProcessor
     /** name of new lib to include in build */
     private var cmdStr :String;
 
-    public function new(mode:EvalMode, ?quitFunction:Void->Void, ?useDebug=false, ?paths:Set<String>, ?libs:Set<String>, ?defines:Set<String> )
+    public function new(?mode:EvalMode=EvalMode.interp, ?quitFunction:Void->Void, ?useDebug=false, ?paths:Set<String>, ?libs:Set<String>, ?defines:Set<String> )
     {
         evalEngine = new EvalEngine(mode);
         program = new Program(evalEngine.tmpSuffix);

@@ -5,8 +5,8 @@
     "tags": ["neko","hashlink","shell","interactive","cli","tool","run"],
     "description": "ihx is an interactive haxe scripting shell",
     "contributors": ["ianxm"],
-    "releasenote": "added support for interp and hashlink",
-    "version": "0.4.0",
+    "releasenote": "added support for python",
+    "version": "0.4.1",
     "url": "http://github.com/ianxm/ihx",
     "dependencies": {
         "hx3compat": ""
