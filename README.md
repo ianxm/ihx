@@ -21,12 +21,19 @@ ihx can be installed and run through haxelib with the commands:
 alternatively, an executable can be obtained either through the
 project repository or by making it from the "run.n" file included in
 the haxelib distribution.  ihx accepts the following command line
-options:
+options for specifying to which target to build:
 
-- `-neko`             target neko vm (default is interp)
-- `-hl`               target hashlink vm (default is interp)
-- `-python`           target python3 (default is interp)
-- `-python3`          target python3 (default is interp)
+- `-neko`             target neko vm
+- `-hl`               target hashlink vm
+- `-python`           target python3
+- `-python3`          target python3
+- `-js`               target javascript
+
+if no target is specified, ihx will use haxe's interp mode, where the
+haxe compiler interprets the code.
+
+ihx also accepts these command line options:
+
 - `-debug`            enable debug mode
 - `-cp [path]`        add `path` to the classpath
 - `-lib [name]`       add a haxelib library
@@ -39,17 +46,17 @@ options:
 differences from standard haxe
 ------------------------------
 
-while the system's standard haxe/neko/hashlink executables are being
-used, not all valid haxe statements will work in ihx.
+while the system's standard haxe/neko/etc executables are being used,
+not all valid haxe statements will work in ihx.
 
-- only one var can be declared per line (no 'var a,b,c;')
+- only one var can be declared per line (no `var a,b,c;`)
 
 - omitting the semicolon at the end of a statement prints the return
   value to the console (but the semicolon is required if the statement
-  has return type Void)
+  has return type `Void`)
 
 - multiple statements on a line are allowed, but the trailing
-  semicolon is required (no 'var a=1; var b=2')
+  semicolon is required (no `var a=1; var b=2`)
 
 - to enter a multiline statement, end each incomplete line with '\'
 
@@ -147,12 +154,14 @@ haxelib libraries can be made accessible with the `addlib` command.
 `clear` does not remove libs from the session.
 
 
-example
--------
+example session
+---------------
 
 the following is an example of an ihx session:
 
-    haxe interactive shell v0.4.0
+    $ haxelib run ihx
+
+    haxe interactive shell v0.4.2
     running in interp mode
     type "help" for help
     >> var a=1
@@ -230,3 +239,14 @@ the following is an example of an ihx session:
     Int : 89
 
     >> quit                              <-- or 'exit' or Ctrl-C or Ctrl-D
+
+
+errors
+------
+
+<dl>
+  <dt>`Accessing this field requires a system platform`</dt>
+  <dd>when targeting javascript, be sure to add the "hxnekojs" library.</dd>
+  <dt>`Cannot use Void as a value`</dt>
+  <dd>include the semicolon at the end of any line that doesn't return a value.</dd>
+</dl>
