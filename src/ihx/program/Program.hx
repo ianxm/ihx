@@ -1,6 +1,6 @@
 /* ************************************************************************ */
 /*                                                                          */
-/*  Copyright (c) 2009-2013 Ian Martins (ianxm@jhu.edu)                     */
+/*  Copyright (c) 2009-2020 Ian Martins (ianxm@jhu.edu)                     */
 /*                                                                          */
 /* This library is free software; you can redistribute it and/or            */
 /* modify it under the terms of the GNU Lesser General Public               */
