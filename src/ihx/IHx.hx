@@ -28,7 +28,7 @@ import ihx.EvalEngine;
 **/
 class IHx
 {
-    private static var VERSION = "0.4.0";
+    private static var VERSION = "0.4.2";
 
     /** the source for commands **/
     private var console :ConsoleReader;
@@ -109,7 +109,19 @@ class IHx
                     maxHistory = Std.parseInt(args.shift());
                 case _:
                     Sys.println('Unknown argument "$arg"');
-                    Sys.println("Usage: neko ihx [-neko|-hl|-python|-python3] [-debug] [-cp /class/path/] [-lib ihx:0.3.0] [-D some_define] [-codi] [-hist-file file] [-hist-max max] [workingdir]");
+                    Sys.println("Usage: neko ihx [options] [workingdir]");
+                    Sys.println("options:");
+                    Sys.println("    -neko              target neko");
+                    Sys.println("    -hl                target hashlink");
+                    Sys.println("    -python|python3    target python3");
+                    Sys.println("    -js                target javascript using nodejs");
+                    Sys.println("    -debug             enable debug mode");
+                    Sys.println("    -cp path           set the classpath (multiple allowed)");
+                    Sys.println("    -lib ihx:0.4.2     add a haxelib library (multiple allowed)");
+                    Sys.println("    -D some_define     define a conditional compilation flag (multiple allowed)");
+                    Sys.println("    -codi              use simplified keyboard input interpreter");
+                    Sys.println("    -hist-file file    specifies a file to use to save history");
+                    Sys.println("    -hist-max max      specifies the max length of the history file");
                     Sys.exit(1);
             }
         }
