@@ -89,6 +89,8 @@ class IHx
                     mode = EvalMode.python;
                 case "-python3":
                     mode = EvalMode.python3;
+                case "-js" | "-nodejs":
+                    mode = EvalMode.nodejs;
                 case "-debug":
                     debug = true;
                 case "-cp":
