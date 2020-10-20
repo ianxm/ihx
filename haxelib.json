@@ -4,7 +4,7 @@
     "classPath": "src/",
     "tags": ["neko","hashlink","shell","interactive","cli","tool","run"],
     "description": "ihx is an interactive haxe scripting shell",
-    "contributors": ["ianxm", "jasononeil", "profelis", "NQNStudios", "JoshCheek", "SimonRichardson", "emugel"],
+    "contributors": ["ianxm", "jason", "NQNStudios", "stickupkid"],
     "releasenote": "added support for nodejs",
     "version": "0.4.2",
     "url": "http://github.com/ianxm/ihx",
